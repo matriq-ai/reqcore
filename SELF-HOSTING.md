@@ -650,6 +650,42 @@ The SSO button appears automatically on the sign-in and sign-up pages.
 
 ---
 
+## Feishu (Lark) Login
+
+Let users sign in with **Feishu** (飞书, `feishu.cn`). On the authorize page Feishu shows a **QR code** so users can scan with the Feishu mobile app — no password needed.
+
+### Setup
+
+1. Create (or open) an app at **https://open.feishu.cn/app**.
+2. Under **安全设置 → 重定向 URL**, add your callback URL:
+   - Production: `https://yourdomain.com/api/auth/oauth2/callback/feishu`
+   - Local dev: `http://localhost:3000/api/auth/oauth2/callback/feishu`
+3. Under **权限管理 (Permissions)**, enable basic user info (name / avatar / open_id). Login needs no OAuth scope — Feishu grants whatever the app is authorized for.
+4. Copy the **App ID** and **App Secret** into your environment:
+
+```bash
+AUTH_FEISHU_CLIENT_ID=cli_your-feishu-app-id
+AUTH_FEISHU_CLIENT_SECRET=your-feishu-app-secret
+# Optional — button label (default "飞书")
+AUTH_FEISHU_PROVIDER_NAME=飞书
+# Optional — extra OAuth scopes (space/comma-separated). Leave unset for
+# login-only. Only add a scope after enabling its permission in 权限管理,
+# otherwise the authorize call fails with "scope not granted".
+# AUTH_FEISHU_SCOPES=
+```
+
+> **Scopes:** Feishu's `scope` parameter is optional and its identifiers vary by console version. Requesting a scope the app hasn't been granted causes an authorize error (e.g. *找不到对应权限配置*). Start with no scope (login works), then add only scopes you can see and enable in 权限管理.
+
+A "Continue with 飞书" button appears automatically on the sign-in and sign-up pages once both `AUTH_FEISHU_CLIENT_ID` and `AUTH_FEISHU_CLIENT_SECRET` are set.
+
+### Notes
+
+- **No email?** Personal Feishu accounts (or apps without the email permission) may not return an email. In that case a stable placeholder `{open_id}@feishu.local` is used so login always succeeds. Such accounts won't auto-match organization invitations sent by email.
+- **Endpoints** target the China region (`accounts.feishu.cn` / `open.feishu.cn`). For Lark International (`larksuite.com`), the endpoint hosts in `server/utils/auth.ts` would need to be adjusted.
+- Like OIDC SSO, Feishu login is **completely opt-in** and has zero impact when its environment variables are unset.
+
+---
+
 ## Feature Flags
 
 Reqcore ships some features behind **feature flags** so they can be tested in production before being released to everyone. The full list of flags lives in [`shared/feature-flags.ts`](shared/feature-flags.ts).

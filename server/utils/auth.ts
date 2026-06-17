@@ -312,15 +312,19 @@ function getAuth(): Auth {
           invitationExpiresIn: 48 * 60 * 60,
         }),
 
-        // ── OIDC SSO (Keycloak, Authentik, Authelia, Okta, Azure AD, etc.) ──
-        // Activated only when all three OIDC env vars are set.
-        // Uses better-auth's genericOAuth plugin with OIDC discovery.
-        ...(env.OIDC_CLIENT_ID &&
-        env.OIDC_CLIENT_SECRET &&
-        env.OIDC_DISCOVERY_URL
-          ? [
-              genericOAuth({
-                config: [
+        // ── Generic OAuth providers (OIDC SSO + Feishu) ──────────────────
+        // Both run through better-auth's genericOAuth plugin, registered as a
+        // single instance with a config array (two instances would collide on
+        // the shared plugin id). Each provider entry is included only when its
+        // credentials are configured.
+        ...(() => {
+          const oauthConfigs = [
+            // ── OIDC SSO (Keycloak, Authentik, Authelia, Okta, Azure AD) ──
+            // Activated only when all three OIDC env vars are set; uses OIDC discovery.
+            ...(env.OIDC_CLIENT_ID &&
+            env.OIDC_CLIENT_SECRET &&
+            env.OIDC_DISCOVERY_URL
+              ? [
                   {
                     providerId: "oidc",
                     clientId: env.OIDC_CLIENT_ID,
@@ -329,7 +333,7 @@ function getAuth(): Auth {
                     scopes: ["openid", "email", "profile"],
                     pkce: true,
                     requireIssuerValidation: true,
-                    async mapProfileToUser(profile) {
+                    async mapProfileToUser(profile: Record<string, any>) {
                       if (!profile.email) {
                         throw new Error(
                           "Email is required but was not provided by the identity provider. Ensure the 'email' scope is granted and the user has a verified email.",
@@ -348,10 +352,128 @@ function getAuth(): Auth {
                       };
                     },
                   },
-                ],
-              }),
-            ]
-          : []),
+                ]
+              : []),
+
+            // ── Feishu / Lark (open.feishu.cn) ────────────────────────────
+            // Feishu is not a built-in social provider and its OAuth2 is
+            // non-standard: the v2 token endpoint requires a JSON body and
+            // user_info wraps the profile in a {code,msg,data} envelope, so we
+            // override getToken + getUserInfo. The browser authorize page shows
+            // a QR code for Feishu-app scan login out of the box.
+            // Callback URL to register in the Feishu console:
+            //   {BETTER_AUTH_URL}/api/auth/oauth2/callback/feishu
+            ...(env.AUTH_FEISHU_CLIENT_ID && env.AUTH_FEISHU_CLIENT_SECRET
+              ? [
+                  {
+                    providerId: "feishu",
+                    clientId: env.AUTH_FEISHU_CLIENT_ID,
+                    clientSecret: env.AUTH_FEISHU_CLIENT_SECRET,
+                    authorizationUrl:
+                      "https://accounts.feishu.cn/open-apis/authen/v1/authorize",
+                    tokenUrl:
+                      "https://open.feishu.cn/open-apis/authen/v2/oauth/token",
+                    // Scopes are optional for Feishu login; default to none so
+                    // login works with just the app's configured permissions.
+                    // Configure AUTH_FEISHU_SCOPES (space/comma-separated) to
+                    // request extra scopes once the matching console permission
+                    // is enabled.
+                    scopes: env.AUTH_FEISHU_SCOPES
+                      ? env.AUTH_FEISHU_SCOPES.split(/[\s,]+/).filter(Boolean)
+                      : [],
+                    pkce: true,
+                    // Feishu v2 token endpoint expects a JSON body (not the
+                    // standard form-urlencoded), so exchange the code ourselves.
+                    async getToken(data: {
+                      code: string;
+                      redirectURI: string;
+                      codeVerifier?: string;
+                    }) {
+                      const res = await $fetch<{
+                        code?: number;
+                        access_token?: string;
+                        refresh_token?: string;
+                        expires_in?: number;
+                        scope?: string;
+                        error?: string;
+                        error_description?: string;
+                      }>("https://open.feishu.cn/open-apis/authen/v2/oauth/token", {
+                        method: "POST",
+                        body: {
+                          grant_type: "authorization_code",
+                          client_id: env.AUTH_FEISHU_CLIENT_ID!,
+                          client_secret: env.AUTH_FEISHU_CLIENT_SECRET!,
+                          code: data.code,
+                          redirect_uri: data.redirectURI,
+                          ...(data.codeVerifier
+                            ? { code_verifier: data.codeVerifier }
+                            : {}),
+                        },
+                      });
+                      if (res.code && res.code !== 0) {
+                        throw new Error(
+                          `Feishu token exchange failed: ${res.code} ${res.error_description ?? res.error ?? ""}`,
+                        );
+                      }
+                      if (!res.access_token) {
+                        throw new Error("Feishu token exchange returned no access_token.");
+                      }
+                      return {
+                        accessToken: res.access_token,
+                        refreshToken: res.refresh_token,
+                        accessTokenExpiresAt: res.expires_in
+                          ? new Date(Date.now() + res.expires_in * 1000)
+                          : undefined,
+                        scopes: res.scope ? String(res.scope).split(" ") : [],
+                      };
+                    },
+                    // user_info wraps the profile in { code, msg, data }.
+                    // Email may be absent (personal accounts / no email scope),
+                    // so fall back to a stable open_id-based placeholder.
+                    async getUserInfo(tokens: { accessToken?: string }) {
+                      const res = await $fetch<{
+                        code: number;
+                        msg: string;
+                        data?: {
+                          name?: string;
+                          en_name?: string;
+                          avatar_url?: string;
+                          open_id?: string;
+                          union_id?: string;
+                          email?: string;
+                          enterprise_email?: string;
+                        };
+                      }>("https://open.feishu.cn/open-apis/authen/v1/user_info", {
+                        headers: { Authorization: `Bearer ${tokens.accessToken}` },
+                      });
+                      if (res.code !== 0 || !res.data) {
+                        throw new Error(
+                          `Feishu user_info failed: ${res.code} ${res.msg}`,
+                        );
+                      }
+                      const d = res.data;
+                      const id = d.open_id || d.union_id;
+                      if (!id) {
+                        throw new Error("Feishu user_info returned no open_id/union_id.");
+                      }
+                      const realEmail = d.enterprise_email || d.email || null;
+                      return {
+                        id,
+                        name: d.name || d.en_name || "Feishu User",
+                        email: realEmail || `${id}@feishu.local`,
+                        emailVerified: !!realEmail,
+                        image: d.avatar_url,
+                      };
+                    },
+                  },
+                ]
+              : []),
+          ];
+
+          return oauthConfigs.length
+            ? [genericOAuth({ config: oauthConfigs })]
+            : [];
+        })(),
 
         // ── Enterprise SSO (per-organization OIDC, cloud-hosted) ─────────
         // Each organization can register their own Identity Provider (Okta,

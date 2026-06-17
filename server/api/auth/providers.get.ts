@@ -26,5 +26,10 @@ export default defineEventHandler(() => {
       process.env.OIDC_DISCOVERY_URL
     ),
     oidcProviderName: process.env.OIDC_PROVIDER_NAME || "SSO",
+    feishu: !!(
+      process.env.AUTH_FEISHU_CLIENT_ID &&
+      process.env.AUTH_FEISHU_CLIENT_SECRET
+    ),
+    feishuProviderName: process.env.AUTH_FEISHU_PROVIDER_NAME || "飞书",
   };
 });

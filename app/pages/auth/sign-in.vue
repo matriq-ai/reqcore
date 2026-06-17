@@ -30,6 +30,10 @@ const oidcEnabled = computed(() => authProviders.value?.oidc ?? false);
 const oidcProviderName = computed(
     () => authProviders.value?.oidcProviderName || "SSO",
 );
+const feishuEnabled = computed(() => authProviders.value?.feishu ?? false);
+const feishuProviderName = computed(
+    () => authProviders.value?.feishuProviderName || "飞书",
+);
 
 const socialProviders = computed(() => {
     const providers: { id: string; name: string }[] = [];
@@ -123,6 +127,31 @@ async function handleSelfHostedSso() {
     try {
         await authClient.signIn.oauth2({
             providerId: "oidc",
+            callbackURL,
+        });
+    } catch (e: unknown) {
+        error.value =
+            e instanceof Error
+                ? e.message
+                : t("auth.signIn.ssoSignInFailedDefault");
+        isLoading.value = false;
+    }
+}
+
+/**
+ * Feishu (Lark) sign-in — global genericOAuth provider configured via env vars.
+ * Redirects to Feishu's authorize page, which offers QR-code scan login.
+ */
+async function handleFeishuSignIn() {
+    isLoading.value = true;
+    error.value = "";
+    const pendingInvitation = route.query.invitation as string | undefined;
+    const callbackURL = pendingInvitation
+        ? localePath(`/auth/accept-invitation/${pendingInvitation}`)
+        : localePath("/dashboard");
+    try {
+        await authClient.signIn.oauth2({
+            providerId: "feishu",
             callbackURL,
         });
     } catch (e: unknown) {
@@ -256,6 +285,39 @@ async function handleSocialSignIn(providerId: string) {
                     </template>
                 </button>
             </div>
+
+            <div v-if="!oidcEnabled && !feishuEnabled" class="relative">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-surface-200 dark:border-surface-700" />
+                </div>
+                <div class="relative flex justify-center text-xs">
+                    <span class="bg-white dark:bg-surface-900 px-2 text-surface-400">{{ $t('auth.signIn.orContinueWithEmail') }}</span>
+                </div>
+            </div>
+        </template>
+
+        <!-- Feishu (Lark) sign-in — shown when AUTH_FEISHU_* env vars are configured -->
+        <template v-if="feishuEnabled">
+            <button
+                type="button"
+                :disabled="isLoading || !!socialLoading || ssoRedirecting"
+                class="px-4 py-2.5 rounded-lg text-sm font-medium shadow-sm transition-all flex items-center justify-center gap-3 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-800 dark:text-surface-200 hover:bg-surface-50 dark:hover:bg-surface-700 hover:border-surface-300 dark:hover:border-surface-600"
+                @click="handleFeishuSignIn"
+            >
+                <template v-if="isLoading">
+                    <svg class="animate-spin size-4 text-surface-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" /><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" /></svg>
+                    {{ $t('auth.signIn.redirecting') }}
+                </template>
+                <template v-else>
+                    <!-- Feishu icon -->
+                    <svg class="size-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="24" height="24" rx="5" fill="#3370FF" />
+                        <path d="M6.2 8.1c2.9 0 5.3 1.5 6.7 3.9 1 1.7 2.7 2.8 4.9 3-1.6 1.8-3.9 2.9-6.4 2.9-3.3 0-6.1-2-7.4-4.9-.3-.8-.5-1.7-.5-2.6 0-.6.1-1.2.2-1.8l2.5-.5z" fill="#fff" />
+                        <path d="M12.6 6.2h5.1c.5 0 .8.5.6 1-.6 1.3-1.7 2.4-3 3.1-.9-1.6-1.7-3-2.7-4.1z" fill="#fff" fill-opacity="0.7" />
+                    </svg>
+                    {{ $t('auth.signIn.continueWithProvider', { provider: feishuProviderName }) }}
+                </template>
+            </button>
 
             <div v-if="!oidcEnabled" class="relative">
                 <div class="absolute inset-0 flex items-center">

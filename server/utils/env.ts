@@ -166,6 +166,23 @@ export const envSchema = z
       .pipe(z.string().min(1))
       .optional()
       .default("SSO"),
+    /** Feishu (Lark) App ID for social sign-in. Obtain from open.feishu.cn → your app → Credentials. */
+    AUTH_FEISHU_CLIENT_ID: emptyToUndefined.pipe(z.string().min(1)).optional(),
+    /** Feishu (Lark) App Secret for social sign-in. */
+    AUTH_FEISHU_CLIENT_SECRET: emptyToUndefined.pipe(z.string().min(1)).optional(),
+    /**
+     * Optional OAuth scopes for Feishu login, space- or comma-separated.
+     * Leave unset to request no scope — Feishu then grants whatever the app is
+     * authorized for in 权限管理, which is enough for the login identity
+     * (name/avatar/open_id). Add scopes (e.g. for email) only once the matching
+     * permission is enabled in the Feishu console, to avoid "scope not granted".
+     */
+    AUTH_FEISHU_SCOPES: emptyToUndefined.pipe(z.string().min(1)).optional(),
+    /** Display name for the Feishu sign-in button. Defaults to "飞书". */
+    AUTH_FEISHU_PROVIDER_NAME: emptyToUndefined
+      .pipe(z.string().min(1))
+      .optional()
+      .default("飞书"),
   })
   .superRefine((data, ctx) => {
     // BETTER_AUTH_URL can be derived at runtime from RAILWAY_PUBLIC_DOMAIN,
