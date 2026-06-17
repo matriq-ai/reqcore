@@ -339,6 +339,13 @@ function onUpdateView(id: string) {
 
 const isEmpty = computed(() => jobs.value.length === 0)
 const noResults = computed(() => !isEmpty.value && filteredJobs.value.length === 0)
+
+const statusLabels = computed<Record<string, string>>(() => ({
+  draft: t('dashboard.jobs.list.status.draft'),
+  open: t('dashboard.jobs.list.status.open'),
+  closed: t('dashboard.jobs.list.status.closed'),
+  archived: t('dashboard.jobs.list.status.archived'),
+}))
 </script>
 
 <template>
@@ -386,8 +393,8 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
       v-else-if="error"
       class="rounded-lg border border-danger-200 dark:border-danger-900 bg-danger-50 dark:bg-danger-950 p-4 text-sm text-danger-700 dark:text-danger-400"
     >
-      Failed to load jobs.
-      <button class="underline ml-1 cursor-pointer" @click="refresh()">Retry</button>
+      {{ $t('dashboard.jobs.list.loadError') }}
+      <button class="underline ml-1 cursor-pointer" @click="refresh()">{{ $t('common.retry') }}</button>
     </div>
 
     <!-- ─── Empty state ─── -->
@@ -395,17 +402,17 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
       <div class="rounded-2xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 p-10 text-center max-w-md">
         <Briefcase class="size-12 text-brand-400 mx-auto mb-4" />
         <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-2">
-          Welcome to Matriq
+          {{ $t('dashboard.jobs.list.emptyState.title') }}
         </h2>
         <p class="text-sm text-surface-500 dark:text-surface-400 mb-6 leading-relaxed">
-          Create your first job posting to start receiving and managing candidates.
+          {{ $t('dashboard.jobs.list.emptyState.description') }}
         </p>
         <NuxtLink
           :to="$localePath('/dashboard/jobs/new')"
           class="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-brand-700 transition-colors no-underline"
         >
           <Plus class="size-4" />
-          Create Your First Job
+          {{ $t('dashboard.jobs.list.emptyState.createFirstJob') }}
         </NuxtLink>
       </div>
     </div>
@@ -419,7 +426,7 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
           <input
             v-model="search"
             type="search"
-            placeholder="Search jobs by title, location, or description"
+            :placeholder="$t('dashboard.jobs.list.searchPlaceholder')"
             class="w-full rounded-lg border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 pl-9 pr-3 py-2 text-sm text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
           />
         </div>
@@ -444,7 +451,7 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
             :class="viewMode === 'gallery'
               ? 'bg-surface-100 dark:bg-surface-800 text-surface-900 dark:text-surface-100'
               : 'text-surface-500 dark:text-surface-400 hover:bg-surface-50 dark:hover:bg-surface-800'"
-            title="Gallery view"
+            :title="$t('dashboard.jobs.list.galleryView')"
             @click="viewMode = 'gallery'"
           >
             <LayoutGrid class="size-4" />
@@ -455,7 +462,7 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
             :class="viewMode === 'list'
               ? 'bg-surface-100 dark:bg-surface-800 text-surface-900 dark:text-surface-100'
               : 'text-surface-500 dark:text-surface-400 hover:bg-surface-50 dark:hover:bg-surface-800'"
-            title="List view"
+            :title="$t('dashboard.jobs.list.listView')"
             @click="viewMode = 'list'"
           >
             <List class="size-4" />
@@ -466,7 +473,7 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
             :class="viewMode === 'table'
               ? 'bg-surface-100 dark:bg-surface-800 text-surface-900 dark:text-surface-100'
               : 'text-surface-500 dark:text-surface-400 hover:bg-surface-50 dark:hover:bg-surface-800'"
-            title="Table view"
+            :title="$t('dashboard.jobs.list.tableView')"
             @click="viewMode = 'table'"
           >
             <Table2 class="size-4" />
@@ -483,7 +490,7 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
           @click="drawerOpen = true"
         >
           <SlidersHorizontal class="size-4" />
-          Filters
+          {{ $t('dashboard.jobs.list.filters') }}
           <span
             v-if="activeFilterCount > 0"
             class="inline-flex items-center justify-center size-4 rounded-full bg-surface-700 dark:bg-surface-300 text-white dark:text-surface-900 text-xs font-semibold"
@@ -497,25 +504,25 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
           @click="clearFilters"
         >
           <X class="size-3" />
-          Clear
+          {{ $t('dashboard.jobs.list.clear') }}
         </button>
       </div>
 
       <!-- ─── Filter Drawer ─── -->
       <FilterDrawer
         v-model="drawerOpen"
-        title="Filter jobs"
-        description="Customize your view, then save it for quick access."
+        :title="$t('dashboard.jobs.list.filterDrawer.title')"
+        :description="$t('dashboard.jobs.list.filterDrawer.description')"
         :active-count="activeFilterCount"
         saveable
-        :default-save-name="`View ${views.length + 1}`"
+        :default-save-name="`${$t('dashboard.jobs.list.filterDrawer.view')} ${views.length + 1}`"
         @reset="applySettings(defaultSettings)"
         @save-view="onSaveView"
       >
         <div class="space-y-6">
           <!-- Status -->
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wide text-surface-500 dark:text-surface-400 mb-2">Status</label>
+            <label class="block text-xs font-semibold uppercase tracking-wide text-surface-500 dark:text-surface-400 mb-2">{{ $t('dashboard.jobs.list.filterDrawer.status') }}</label>
             <div class="flex flex-wrap gap-1.5">
               <button
                 v-for="opt in statusOptions"
@@ -534,7 +541,7 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
 
           <!-- Employment type -->
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wide text-surface-500 dark:text-surface-400 mb-2">Employment type</label>
+            <label class="block text-xs font-semibold uppercase tracking-wide text-surface-500 dark:text-surface-400 mb-2">{{ $t('dashboard.jobs.list.filterDrawer.employmentType') }}</label>
             <div class="flex flex-wrap gap-1.5">
               <button
                 v-for="opt in typeOptions"
@@ -553,7 +560,7 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
 
           <!-- Experience level -->
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wide text-surface-500 dark:text-surface-400 mb-2">Experience level</label>
+            <label class="block text-xs font-semibold uppercase tracking-wide text-surface-500 dark:text-surface-400 mb-2">{{ $t('dashboard.jobs.list.filterDrawer.experienceLevel') }}</label>
             <div class="flex flex-wrap gap-1.5">
               <button
                 v-for="opt in experienceOptions"
@@ -572,7 +579,7 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
 
           <!-- Work arrangement -->
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wide text-surface-500 dark:text-surface-400 mb-2">Work arrangement</label>
+            <label class="block text-xs font-semibold uppercase tracking-wide text-surface-500 dark:text-surface-400 mb-2">{{ $t('dashboard.jobs.list.filterDrawer.workArrangement') }}</label>
             <div class="flex flex-wrap gap-1.5">
               <button
                 v-for="opt in remoteOptions"
@@ -591,26 +598,26 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
 
           <!-- Sort -->
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wide text-surface-500 dark:text-surface-400 mb-2">Sort by</label>
+            <label class="block text-xs font-semibold uppercase tracking-wide text-surface-500 dark:text-surface-400 mb-2">{{ $t('dashboard.jobs.list.filterDrawer.sortBy') }}</label>
             <div class="flex gap-2">
               <select
                 v-model="sortKey"
                 class="flex-1 rounded-lg border border-surface-300 dark:border-surface-700 px-3 py-2 text-sm bg-white dark:bg-surface-900 text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
               >
-                <option value="created">Date created</option>
-                <option value="title">Title</option>
-                <option value="status">Status</option>
-                <option value="type">Employment type</option>
-                <option value="location">Location</option>
-                <option value="new">New applicants</option>
-                <option value="active">Active candidates</option>
+                <option value="created">{{ $t('dashboard.jobs.list.filterDrawer.sort.dateCreated') }}</option>
+                <option value="title">{{ $t('dashboard.jobs.list.filterDrawer.sort.title') }}</option>
+                <option value="status">{{ $t('dashboard.jobs.list.filterDrawer.sort.status') }}</option>
+                <option value="type">{{ $t('dashboard.jobs.list.filterDrawer.employmentType') }}</option>
+                <option value="location">{{ $t('dashboard.jobs.list.filterDrawer.sort.location') }}</option>
+                <option value="new">{{ $t('dashboard.jobs.list.filterDrawer.sort.newApplicants') }}</option>
+                <option value="active">{{ $t('dashboard.jobs.list.filterDrawer.sort.activeCandidates') }}</option>
               </select>
               <select
                 v-model="sortDir"
                 class="w-32 rounded-lg border border-surface-300 dark:border-surface-700 px-3 py-2 text-sm bg-white dark:bg-surface-900 text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
               >
-                <option value="asc">Ascending</option>
-                <option value="desc">Descending</option>
+                <option value="asc">{{ $t('dashboard.jobs.list.filterDrawer.sort.ascending') }}</option>
+                <option value="desc">{{ $t('dashboard.jobs.list.filterDrawer.sort.descending') }}</option>
               </select>
             </div>
           </div>
@@ -623,8 +630,8 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
         class="rounded-xl border border-dashed border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 p-10 text-center"
       >
         <Search class="size-8 text-surface-300 dark:text-surface-600 mx-auto mb-3" />
-        <p class="text-sm text-surface-600 dark:text-surface-300 mb-1">No jobs match your search</p>
-        <p class="text-xs text-surface-400 dark:text-surface-500">Try a different keyword or clear your filters.</p>
+        <p class="text-sm text-surface-600 dark:text-surface-300 mb-1">{{ $t('dashboard.jobs.list.noResults.title') }}</p>
+        <p class="text-xs text-surface-400 dark:text-surface-500">{{ $t('dashboard.jobs.list.noResults.hint') }}</p>
       </div>
 
       <!-- ═══════════════════════════════════
@@ -637,7 +644,7 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
               <tr class="bg-surface-50 dark:bg-surface-800/50 border-b border-surface-200 dark:border-surface-800">
                 <th class="text-left px-4 py-3 font-medium text-surface-500 dark:text-surface-400">
                   <button class="inline-flex items-center gap-1 hover:text-surface-900 dark:hover:text-surface-100 transition-colors" @click="toggleSort('title')">
-                    Title
+                    {{ $t('dashboard.jobs.list.filterDrawer.sort.title') }}
                     <ArrowUp v-if="sortKey === 'title' && sortDir === 'asc'" class="size-3.5" />
                     <ArrowDown v-else-if="sortKey === 'title' && sortDir === 'desc'" class="size-3.5" />
                     <ArrowUpDown v-else class="size-3.5 opacity-40" />
@@ -645,7 +652,7 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
                 </th>
                 <th class="text-left px-4 py-3 font-medium text-surface-500 dark:text-surface-400">
                   <button class="inline-flex items-center gap-1 hover:text-surface-900 dark:hover:text-surface-100 transition-colors" @click="toggleSort('status')">
-                    Status
+                    {{ $t('dashboard.jobs.list.filterDrawer.sort.status') }}
                     <ArrowUp v-if="sortKey === 'status' && sortDir === 'asc'" class="size-3.5" />
                     <ArrowDown v-else-if="sortKey === 'status' && sortDir === 'desc'" class="size-3.5" />
                     <ArrowUpDown v-else class="size-3.5 opacity-40" />
@@ -653,7 +660,7 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
                 </th>
                 <th class="text-left px-4 py-3 font-medium text-surface-500 dark:text-surface-400 hidden sm:table-cell">
                   <button class="inline-flex items-center gap-1 hover:text-surface-900 dark:hover:text-surface-100 transition-colors" @click="toggleSort('type')">
-                    Type
+                    {{ $t('dashboard.jobs.list.filterDrawer.employmentType') }}
                     <ArrowUp v-if="sortKey === 'type' && sortDir === 'asc'" class="size-3.5" />
                     <ArrowDown v-else-if="sortKey === 'type' && sortDir === 'desc'" class="size-3.5" />
                     <ArrowUpDown v-else class="size-3.5 opacity-40" />
@@ -661,7 +668,7 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
                 </th>
                 <th class="text-left px-4 py-3 font-medium text-surface-500 dark:text-surface-400 hidden md:table-cell">
                   <button class="inline-flex items-center gap-1 hover:text-surface-900 dark:hover:text-surface-100 transition-colors" @click="toggleSort('location')">
-                    Location
+                    {{ $t('dashboard.jobs.list.filterDrawer.sort.location') }}
                     <ArrowUp v-if="sortKey === 'location' && sortDir === 'asc'" class="size-3.5" />
                     <ArrowDown v-else-if="sortKey === 'location' && sortDir === 'desc'" class="size-3.5" />
                     <ArrowUpDown v-else class="size-3.5 opacity-40" />
@@ -669,7 +676,7 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
                 </th>
                 <th class="text-center px-4 py-3 font-medium text-surface-500 dark:text-surface-400">
                   <button class="inline-flex items-center gap-1 hover:text-surface-900 dark:hover:text-surface-100 transition-colors" @click="toggleSort('new')">
-                    New
+                    {{ $t('dashboard.home.stages.new') }}
                     <ArrowUp v-if="sortKey === 'new' && sortDir === 'asc'" class="size-3.5" />
                     <ArrowDown v-else-if="sortKey === 'new' && sortDir === 'desc'" class="size-3.5" />
                     <ArrowUpDown v-else class="size-3.5 opacity-40" />
@@ -677,7 +684,7 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
                 </th>
                 <th class="text-center px-4 py-3 font-medium text-surface-500 dark:text-surface-400 hidden sm:table-cell">
                   <button class="inline-flex items-center gap-1 hover:text-surface-900 dark:hover:text-surface-100 transition-colors" @click="toggleSort('active')">
-                    Active
+                    {{ $t('dashboard.jobs.list.filterDrawer.sort.active') }}
                     <ArrowUp v-if="sortKey === 'active' && sortDir === 'asc'" class="size-3.5" />
                     <ArrowDown v-else-if="sortKey === 'active' && sortDir === 'desc'" class="size-3.5" />
                     <ArrowUpDown v-else class="size-3.5 opacity-40" />
@@ -685,7 +692,7 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
                 </th>
                 <th class="text-left px-4 py-3 font-medium text-surface-500 dark:text-surface-400 hidden lg:table-cell">
                   <button class="inline-flex items-center gap-1 hover:text-surface-900 dark:hover:text-surface-100 transition-colors" @click="toggleSort('created')">
-                    Created
+                    {{ $t('dashboard.jobs.list.filterDrawer.sort.dateCreated') }}
                     <ArrowUp v-if="sortKey === 'created' && sortDir === 'asc'" class="size-3.5" />
                     <ArrowDown v-else-if="sortKey === 'created' && sortDir === 'desc'" class="size-3.5" />
                     <ArrowUpDown v-else class="size-3.5 opacity-40" />
@@ -713,7 +720,7 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
                       v-if="(j.pipeline?.new ?? 0) > 0"
                       class="inline-flex items-center justify-center rounded-full bg-warning-100 dark:bg-warning-900/40 text-warning-700 dark:text-warning-400 text-[10px] font-bold px-1.5 py-0.5 shrink-0"
                     >
-                      {{ j.pipeline.new }} new
+                      {{ $t('dashboard.jobs.list.newBadge', { count: j.pipeline.new }) }}
                     </span>
                   </div>
                 </td>
@@ -722,7 +729,7 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
                     class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium capitalize"
                     :class="statusBadgeClasses[j.status] ?? 'bg-surface-100 text-surface-600'"
                   >
-                    {{ j.status }}
+                    {{ statusLabels[j.status] ?? j.status }}
                   </span>
                 </td>
                 <td class="px-4 py-3 text-surface-500 dark:text-surface-400 hidden sm:table-cell whitespace-nowrap">
@@ -785,7 +792,7 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
                 class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium shrink-0 capitalize mt-0.5"
                 :class="statusBadgeClasses[j.status] ?? 'bg-surface-100 text-surface-600'"
               >
-                {{ j.status }}
+                {{ statusLabels[j.status] ?? j.status }}
               </span>
             </div>
 
@@ -823,11 +830,11 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
               class="flex items-center justify-between gap-2 -mx-4 -mb-4 px-4 py-2 rounded-b-xl bg-warning-50/60 dark:bg-warning-950/30 border-t border-warning-100 dark:border-warning-900/30"
             >
               <span class="text-xs font-medium text-warning-700 dark:text-warning-400">
-                {{ j.pipeline.new }} new application{{ j.pipeline.new === 1 ? '' : 's' }}
+                {{ $t('dashboard.jobs.list.newApplications', { count: j.pipeline.new }) }}
               </span>
               <span class="inline-flex items-center gap-1 text-xs text-brand-600 dark:text-brand-400 font-medium">
                 <Kanban class="size-3" />
-                Review
+                {{ $t('dashboard.jobs.list.review') }}
               </span>
             </div>
           </NuxtLink>
@@ -843,10 +850,10 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
           <div class="flex items-center gap-2 mb-3 px-1">
             <Bell class="size-4 text-warning-500" />
             <h2 class="text-sm font-semibold text-surface-900 dark:text-surface-100">
-              Needs your attention
+              {{ $t('dashboard.jobs.list.needsAttention') }}
             </h2>
             <span class="text-xs text-surface-400 dark:text-surface-500">
-              {{ jobsNeedingAttention.length }} job{{ jobsNeedingAttention.length === 1 ? '' : 's' }}
+              {{ $t('dashboard.jobs.list.jobCount', { count: jobsNeedingAttention.length }) }}
             </span>
           </div>
 
@@ -871,7 +878,7 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
                         class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium shrink-0 capitalize"
                         :class="statusBadgeClasses[j.status]"
                       >
-                        {{ j.status }}
+                        {{ statusLabels[j.status] ?? j.status }}
                       </span>
                     </div>
                     <div class="flex items-center gap-3 text-xs text-surface-400">
@@ -906,14 +913,14 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
               <!-- Action bar -->
               <div class="flex items-center gap-2 px-5 py-3 bg-warning-50/50 dark:bg-warning-950/20 border-t border-warning-100 dark:border-warning-900/30">
                 <span class="text-xs font-medium text-warning-700 dark:text-warning-400 mr-auto">
-                  {{ j.pipeline.new }} new application{{ j.pipeline.new === 1 ? '' : 's' }} to review
+                  {{ $t('dashboard.jobs.list.newApplicationsToReview', { count: j.pipeline.new }) }}
                 </span>
                 <NuxtLink
                   :to="$localePath(`/dashboard/jobs/${j.id}`)"
                   class="inline-flex items-center gap-1.5 rounded-md bg-brand-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-brand-700 transition-colors no-underline"
                 >
                   <Kanban class="size-3" />
-                  Review in Pipeline
+                  {{ $t('dashboard.jobs.list.reviewInPipeline') }}
                 </NuxtLink>
               </div>
             </div>
@@ -925,10 +932,10 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
           <div v-if="jobsNeedingAttention.length > 0" class="flex items-center gap-2 mb-3 px-1">
             <Briefcase class="size-4 text-surface-400" />
             <h2 class="text-sm font-semibold text-surface-900 dark:text-surface-100">
-              All jobs
+              {{ $t('dashboard.jobs.list.allJobs') }}
             </h2>
             <span class="text-xs text-surface-400 dark:text-surface-500">
-              {{ otherJobs.length }} job{{ otherJobs.length === 1 ? '' : 's' }}
+              {{ $t('dashboard.jobs.list.jobCount', { count: otherJobs.length }) }}
             </span>
           </div>
 
@@ -950,7 +957,7 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
                   class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium shrink-0 capitalize"
                   :class="statusBadgeClasses[j.status] ?? 'bg-surface-100 text-surface-600'"
                 >
-                  {{ j.status }}
+                  {{ statusLabels[j.status] ?? j.status }}
                 </span>
               </div>
               <div class="flex items-center gap-3 text-xs text-surface-400 mb-3">
@@ -960,7 +967,7 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
                   {{ j.location }}
                 </span>
                 <span v-if="j.status === 'draft'" class="text-surface-400 italic">
-                  Not published yet
+                  {{ $t('dashboard.jobs.list.notPublishedYet') }}
                 </span>
               </div>
 
@@ -989,10 +996,10 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
       <!-- Total count -->
       <p v-if="!noResults" class="text-xs text-surface-400 pt-4 px-1">
         <template v-if="search || activeFilterCount > 0">
-          Showing {{ filteredJobs.length }} of {{ total }} job{{ total === 1 ? '' : 's' }}
+          {{ $t('dashboard.jobs.list.showingOf', { count: filteredJobs.length, total }) }}
         </template>
         <template v-else>
-          {{ total }} job{{ total === 1 ? '' : 's' }} total
+          {{ $t('dashboard.jobs.list.totalCount', { count: total }) }}
         </template>
       </p>
     </template>

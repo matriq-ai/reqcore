@@ -240,6 +240,919 @@
         "viewInterviews": "View interviews"
       }
     },
+    "jobs": {
+      "list": {
+        "seoDescription": "Your active job postings",
+        "title": "My Jobs",
+        "loadError": "Failed to load jobs.",
+        "emptyState": {
+          "title": "Welcome to Matriq",
+          "description": "Create your first job posting to start receiving and managing candidates.",
+          "createFirstJob": "Create Your First Job"
+        },
+        "searchPlaceholder": "Search jobs by title, location, or description",
+        "galleryView": "Gallery view",
+        "listView": "List view",
+        "tableView": "Table view",
+        "filters": "Filters",
+        "clear": "Clear",
+        "filterDrawer": {
+          "title": "Filter jobs",
+          "description": "Customize your view, then save it for quick access.",
+          "view": "View",
+          "status": "Status",
+          "employmentType": "Employment type",
+          "experienceLevel": "Experience level",
+          "workArrangement": "Work arrangement",
+          "sortBy": "Sort by",
+          "sort": {
+            "dateCreated": "Date created",
+            "title": "Title",
+            "status": "Status",
+            "location": "Location",
+            "newApplicants": "New applicants",
+            "activeCandidates": "Active candidates",
+            "ascending": "Ascending",
+            "descending": "Descending",
+            "active": "Active"
+          }
+        },
+        "noResults": {
+          "title": "No jobs match your search",
+          "hint": "Try a different keyword or clear your filters."
+        },
+        "status": {
+          "open": "Open",
+          "draft": "Draft",
+          "closed": "Closed",
+          "archived": "Archived"
+        },
+        "types": {
+          "fullTime": "Full-time",
+          "partTime": "Part-time",
+          "contract": "Contract",
+          "internship": "Internship"
+        },
+        "experience": {
+          "junior": "Junior",
+          "mid": "Mid",
+          "senior": "Senior",
+          "lead": "Lead"
+        },
+        "remote": {
+          "remote": "Remote",
+          "hybrid": "Hybrid",
+          "onsite": "On-site"
+        },
+        "newBadge": "{count} new",
+        "review": "Review",
+        "needsAttention": "Needs your attention",
+        "allJobs": "All jobs",
+        "jobCount": "{count} job(s)",
+        "newApplications": "{count} new application(s)",
+        "newApplicationsToReview": "{count} new application(s) to review",
+        "reviewInPipeline": "Review in Pipeline",
+        "notPublishedYet": "Not published yet",
+        "showingOf": "Showing {count} of {total} job(s)",
+        "totalCount": "{count} job(s) total"
+      },
+      "candidates": {
+        "pageTitle": "Table — {title} — Matriq",
+        "pageTitleFallback": "Table — Matriq",
+        "loading": "Loading candidates…",
+        "jobLoadError": "Job not found or failed to load.",
+        "loadError": "Failed to load candidates.",
+        "backToJobs": "Back to Jobs",
+        "view": "View",
+        "columns": "Columns",
+        "column": {
+          "email": "Email",
+          "score": "Score",
+          "status": "Status",
+          "createdAt": "Applied"
+        },
+        "filterByStatus": "Filter by Status",
+        "scoreRange": "Score Range",
+        "scoreMinPlaceholder": "Min",
+        "scoreMaxPlaceholder": "Max",
+        "scoreRangeTo": "to",
+        "clearFilters": "Clear filters",
+        "scoreFilterPill": "Score {min}–{max}",
+        "emptyState": {
+          "title": "No candidates yet",
+          "description": "Candidates will appear here when they apply to this job or when you link candidates from the Overview tab."
+        },
+        "table": {
+          "name": "Name",
+          "email": "Email",
+          "score": "Score",
+          "status": "Status",
+          "applied": "Applied",
+          "noResults": "No candidates match the current filters.",
+          "scorePoints": "{score} pts"
+        },
+        "footerCount": "{shown} of {total} candidate(s)",
+        "timeAgo": {
+          "minutes": "{count}m ago",
+          "hours": "{count}h ago",
+          "days": "{count}d ago"
+        }
+      },
+      "new": {
+        "seoDescription": "Create a new job posting",
+        "title": "New Job",
+        "backToJobs": "Back to Jobs",
+        "saveDraft": "Save draft",
+        "saveAndContinue": "Save & continue",
+        "steps": {
+          "jobDetails": {
+            "title": "Job Details",
+            "description": "Title, location, and description"
+          },
+          "applicationForm": {
+            "title": "Application Form",
+            "description": "Customize what candidates submit"
+          },
+          "aiScoring": {
+            "title": "AI Scoring",
+            "description": "Define how candidates are evaluated"
+          },
+          "publish": {
+            "title": "Publish",
+            "description": "Review and distribute your job"
+          }
+        },
+        "jobDetails": {
+          "sectionTitle": "Job title and department",
+          "jobTitle": "Job title",
+          "jobTitlePlaceholder": "e.g. Senior Frontend Engineer",
+          "jobTitleHint": "80 characters left. No special characters.",
+          "locationSectionTitle": "Location",
+          "officeLocation": "Office location",
+          "officeLocationPlaceholder": "e.g. New York, NY 10019, United States",
+          "workplaceType": "Workplace type",
+          "detailsSectionTitle": "Details",
+          "experienceLevel": "Experience level",
+          "remoteStatus": "Remote status",
+          "remoteNotSpecified": "Not specified",
+          "descriptionSectionTitle": "Description",
+          "aboutTheRole": "About the role",
+          "aboutTheRolePlaceholder": "Describe the role, responsibilities, and requirements…",
+          "descriptionHint": "Minimum 700 characters recommended."
+        },
+        "applicationForm": {
+          "sectionLabel": "Customize your application form",
+          "description": "Configure which fields candidates see when they apply. Locked fields are always collected and cannot be turned off.",
+          "personalInformation": "Personal information",
+          "firstName": "First name",
+          "lastName": "Last name",
+          "email": "Email",
+          "phone": "Phone",
+          "mandatory": "Mandatory",
+          "optional": "Optional",
+          "documents": "Documents",
+          "resume": "Resume / CV",
+          "resumeHint": "PDF, DOC, or DOCX up to 10 MB",
+          "coverLetter": "Cover letter",
+          "coverLetterHint": "Free-text field, max 10,000 characters",
+          "required": "Required",
+          "off": "Off",
+          "resumeRequirementAriaLabel": "Resume requirement",
+          "coverLetterRequirementAriaLabel": "Cover letter requirement",
+          "screeningQuestions": "Screening questions",
+          "questionsAdded": "{count} question(s) added",
+          "dismiss": "Dismiss",
+          "moveUp": "Move up",
+          "moveDown": "Move down",
+          "noQuestionsYet": "No screening questions added yet.",
+          "addAQuestion": "Add a question"
+        },
+        "scoring": {
+          "title": "AI Candidate Scoring",
+          "description": "Define the criteria that AI will use to evaluate and rank candidates. Adjust weights to prioritize what matters most.",
+          "aiNotConfiguredTitle": "AI provider not configured",
+          "aiNotConfiguredDescription": "To use AI-powered scoring, you need to configure an AI provider first. You can still define criteria manually and set up AI later.",
+          "goToAiSettings": "Go to AI settings",
+          "categories": {
+            "technical": "Technical",
+            "experience": "Experience",
+            "softSkills": "Soft Skills",
+            "education": "Education",
+            "culture": "Culture",
+            "custom": "Custom"
+          },
+          "modes": {
+            "premade": {
+              "label": "Pre-made templates",
+              "description": "Choose from expert-designed scoring rubrics for common role types."
+            },
+            "ai": {
+              "label": "Generate from job description",
+              "description": "AI analyzes your job description and creates tailored criteria.",
+              "requiresAiSetup": "Requires AI provider setup"
+            },
+            "custom": {
+              "label": "Write your own",
+              "description": "Create custom scoring criteria tailored to your exact needs."
+            }
+          },
+          "criteriaConfigured": "{count} criteria configured",
+          "clearAll": "Clear all",
+          "remove": "Remove",
+          "weight": "Weight",
+          "maxScore": "Max score: {count}",
+          "key": "Key:",
+          "addCriterion": "Add criterion",
+          "addCustomCriterion": "Add custom criterion",
+          "form": {
+            "name": "Name *",
+            "namePlaceholder": "e.g. React Expertise",
+            "category": "Category",
+            "description": "Description",
+            "descriptionPlaceholder": "Describe what the AI should evaluate for this criterion...",
+            "maxScore": "Max Score",
+            "initialWeight": "Initial Weight (0–100)"
+          },
+          "cancel": "Cancel",
+          "autoScore": {
+            "label": "Automatically score every new applicant",
+            "description": "When a candidate applies, AI will automatically analyze their resume against these criteria and assign a score. Requires an AI provider configured in settings plus a resume upload.",
+            "configureLink": "Configure an AI provider",
+            "configureSuffix": "to enable automatic scoring."
+          },
+          "skipNote": "Scoring criteria are optional. You can skip this step and add them later from job settings."
+        },
+        "scoringTemplates": {
+          "standard": {
+            "label": "Standard",
+            "description": "3 balanced criteria for any role"
+          },
+          "technical": {
+            "label": "Technical",
+            "description": "5 criteria focused on engineering"
+          },
+          "nonTechnical": {
+            "label": "Non-Technical",
+            "description": "5 criteria for business roles"
+          }
+        },
+        "questionTypes": {
+          "shortText": "Short Text",
+          "longText": "Long Text",
+          "singleSelect": "Single Select",
+          "multiSelect": "Multi Select",
+          "number": "Number",
+          "date": "Date",
+          "url": "URL",
+          "checkbox": "Checkbox",
+          "fileUpload": "File Upload"
+        },
+        "publish": {
+          "liveTitle": "Your job is live!",
+          "liveDescription": "{title} is now accepting applications.",
+          "preview": "Preview",
+          "directLinkLabel": "Direct application link",
+          "noTracking": "(no tracking)",
+          "copy": "Copy",
+          "copied": "Copied!",
+          "distributeTitle": "Distribute to job boards",
+          "distributeDescription": "Create tracked links for each platform. This lets you see exactly where your applicants come from.",
+          "jobBoards": "Job boards",
+          "directOutreach": "Direct outreach",
+          "socialMedia": "Social media",
+          "createTrackingLink": "Create tracking link",
+          "creating": "Creating...",
+          "trackedHint": "Clicks and applications from this link will be tracked",
+          "customJobBoard": "Custom job board",
+          "customJobBoardDescription": "Create a tracked link for any platform not listed above.",
+          "customJobBoardPlaceholder": "e.g. Hacker News, AngelList, Niche Board",
+          "createLink": "Create link",
+          "customBoardLabel": "Custom job board",
+          "linkCountCreated": "{count} tracking link(s) created.",
+          "viewAllAnalyticsPrefix": "View all analytics and manage links in the",
+          "sourceTrackingDashboard": "Source Tracking dashboard",
+          "viewJob": "View job",
+          "goToDashboard": "Go to dashboard",
+          "readyTitle": "Ready to go?",
+          "readyDescription": "Publish your job to start receiving applications. After publishing, you'll be able to create tracked links for each platform where you share it.",
+          "publishNow": {
+            "label": "Publish now",
+            "description": "Your job goes live immediately. The application link will be copied to your clipboard so you can share it right away."
+          },
+          "saveAsDraft": {
+            "label": "Save as draft",
+            "description": "Save for later review. The job won't be visible to candidates until you publish it."
+          },
+          "jobSummary": "Job summary",
+          "summaryTitle": "Title",
+          "summaryLocation": "Location",
+          "summaryResume": "Resume",
+          "summaryQuestions": "Questions",
+          "customQuestions": "{count} custom question(s)",
+          "afterPublishingTitle": "After publishing",
+          "afterPublishingDescription": "You'll get tracked links for LinkedIn, Indeed, and other platforms so you can see exactly where your applicants come from.",
+          "cancel": "Cancel",
+          "back": "Back",
+          "publishing": "Publishing...",
+          "saving": "Saving...",
+          "publishAndCopy": "Publish & copy link"
+        },
+        "channels": {
+          "linkedin": {
+            "name": "LinkedIn",
+            "description": "Post on LinkedIn Jobs or share in your feed"
+          },
+          "indeed": {
+            "name": "Indeed",
+            "description": "List on the Indeed job board"
+          },
+          "glassdoor": {
+            "name": "Glassdoor",
+            "description": "Publish on Glassdoor listings"
+          },
+          "ziprecruiter": {
+            "name": "ZipRecruiter",
+            "description": "Post on ZipRecruiter"
+          },
+          "email": {
+            "name": "Email campaign",
+            "description": "Send to candidates or mailing list"
+          },
+          "referral": {
+            "name": "Employee referral",
+            "description": "Share internally with your team"
+          },
+          "careerSite": {
+            "name": "Career site",
+            "description": "Embed on your company website"
+          },
+          "twitter": {
+            "name": "X (Twitter)",
+            "description": "Share on your X timeline"
+          },
+          "facebook": {
+            "name": "Facebook",
+            "description": "Post on Facebook page or groups"
+          },
+          "reddit": {
+            "name": "Reddit",
+            "description": "Share in relevant subreddits"
+          }
+        },
+        "tips": {
+          "title": "Tips",
+          "step1": {
+            "jobTitle": {
+              "heading": "Use common job titles",
+              "body": "Advertise for just one job e.g. 'Nurse', not 'nurses'."
+            },
+            "location": {
+              "heading": "Office location",
+              "body": "Use a location to attract the most appropriate candidates. Some job boards require a location."
+            },
+            "description": {
+              "heading": "Format description",
+              "body": "Format into sections and lists to improve readability."
+            }
+          },
+          "step2": {
+            "keepShort": {
+              "heading": "Keep it short",
+              "body": "Too many questions can deter candidates. Stick to 3–5 essential questions."
+            },
+            "resumeMatters": {
+              "heading": "Resume matters",
+              "body": "Requiring a resume enables AI scoring and makes it easier to evaluate candidates at scale."
+            },
+            "standardFields": {
+              "heading": "Standard fields",
+              "body": "Name, email, and phone are always collected. Phone is optional for candidates by default."
+            }
+          },
+          "step3": {
+            "startWithTemplate": {
+              "heading": "Start with a template",
+              "body": "Pre-made criteria cover the most common evaluation patterns. You can always customize them after."
+            },
+            "adjustWeights": {
+              "heading": "Adjust weights",
+              "body": "Use the sliders to prioritize what matters most. Higher weight = more influence on the final score."
+            },
+            "aiSetupRequired": {
+              "heading": "AI setup required",
+              "body": "To use AI-generated criteria or automatic scoring, configure your AI provider in",
+              "settingsLink": "settings"
+            }
+          },
+          "step4": {
+            "publishWhenReady": {
+              "heading": "Publish when ready",
+              "body": "Publishing makes the job visible to candidates. You can unpublish at any time from the job settings."
+            },
+            "useTrackingLinks": {
+              "heading": "Use tracking links",
+              "body": "Create a unique link for each platform (LinkedIn, Indeed, etc.) to see where your best applicants come from."
+            },
+            "onePerChannel": {
+              "heading": "One link per channel",
+              "body": "Each tracking link counts clicks and applications separately so you can compare which channels work best."
+            },
+            "draftsArePrivate": {
+              "heading": "Drafts are private",
+              "body": "Draft jobs are only visible to your team. Candidates cannot see or apply to draft jobs."
+            }
+          }
+        },
+        "toasts": {
+          "loadTemplateFailed": "Failed to load template",
+          "jobTitleRequired": {
+            "title": "Job title required",
+            "message": "Please enter a job title first."
+          },
+          "jobDescriptionRequired": {
+            "title": "Job description required",
+            "message": "Please enter a job description first."
+          },
+          "criteriaGenerated": {
+            "title": "Criteria generated",
+            "message": "Generated {count} scoring criteria"
+          },
+          "aiNotConfigured": {
+            "title": "AI provider not configured",
+            "message": "Configure an AI provider in settings to generate criteria automatically.",
+            "link": "Configure AI"
+          },
+          "generateCriteriaFailed": {
+            "title": "Generation failed",
+            "message": "Failed to generate scoring criteria"
+          },
+          "unknownErrorDetail": "Unknown error (status {statusCode})",
+          "duplicateCriterion": {
+            "title": "Duplicate criterion",
+            "message": "A criterion with key \"{key}\" already exists"
+          },
+          "aiIntegrationNotSetUp": {
+            "title": "AI integration not set up",
+            "message": "Configure an AI provider to use AI-powered scoring features."
+          },
+          "createTrackingLinkFailed": "Failed to create tracking link for {name}",
+          "duplicateBoard": {
+            "title": "Duplicate board",
+            "message": "A tracking link for \"{name}\" already exists"
+          },
+          "unexpectedError": "An unexpected error occurred",
+          "createJobFailed": "Failed to create job"
+        },
+        "validation": {
+          "titleRequired": "Job title is required",
+          "titleMaxLength": "Job title must be 200 characters or fewer"
+        }
+      },
+      "settings": {
+        "seoTitle": "Settings — {title} — Matriq",
+        "seoTitleFallback": "Job Settings — Matriq",
+        "loading": "Loading…",
+        "jobNotFound": "Job not found.",
+        "loadFailed": "Failed to load job.",
+        "backToJobs": "Back to Jobs",
+        "title": "Job Settings",
+        "description": "Edit the details for {title}.",
+        "basicDetails": {
+          "sectionTitle": "Basic Details",
+          "title": "Title",
+          "description": "Description",
+          "descriptionPlaceholder": "Describe the role, responsibilities, and requirements…",
+          "location": "Location",
+          "locationPlaceholder": "e.g. Oslo, Norway",
+          "employmentType": "Employment Type",
+          "workArrangement": "Work Arrangement",
+          "experienceLevel": "Experience Level",
+          "urlSlug": "URL Slug",
+          "urlSlugPlaceholder": "auto-generated-from-title",
+          "urlSlugHint": "Used in the public application URL. Leave blank to auto-generate from title."
+        },
+        "salary": {
+          "sectionTitle": "Salary & Compensation",
+          "sectionHint": "Adding salary information improves visibility on Google Jobs.",
+          "negotiable": "Salary is negotiable",
+          "negotiableHint": "When checked, \"Negotiable\" is shown instead of a specific salary range. Salary fields below will be cleared.",
+          "minimum": "Minimum Salary",
+          "minimumPlaceholder": "e.g. 50000",
+          "maximum": "Maximum Salary",
+          "maximumPlaceholder": "e.g. 80000",
+          "currency": "Currency",
+          "currencyPlaceholder": "e.g. USD, EUR, NOK",
+          "payPeriod": "Pay Period",
+          "payPeriodNotSpecified": "Not specified",
+          "payPeriodYear": "Per year",
+          "payPeriodMonth": "Per month",
+          "payPeriodHour": "Per hour"
+        },
+        "applicationOptions": {
+          "sectionTitle": "Application Options",
+          "sectionHint": "Control what candidates must provide when applying.",
+          "requireResume": "Require resume/CV",
+          "requireResumeHint": "Candidates must upload a resume file.",
+          "requireCoverLetter": "Ask for cover letter",
+          "requireCoverLetterHint": "Candidates can write a cover letter.",
+          "autoScoreOnApply": "Auto-score on apply",
+          "autoScoreOnApplyHint": "Automatically run AI scoring when a candidate applies."
+        },
+        "expiry": {
+          "sectionTitle": "Listing Expiry",
+          "sectionHint": "Set when this job posting automatically expires. Required for Google Jobs rich results.",
+          "validThrough": "Valid Through",
+          "clear": "Clear",
+          "hint": "Leave blank if there is no fixed expiry date."
+        },
+        "applicationLink": {
+          "sectionTitle": "Application Link",
+          "sectionHint": "Share this link with candidates so they can apply to this position.",
+          "copy": "Copy",
+          "copied": "Copied!"
+        },
+        "save": {
+          "save": "Save Changes",
+          "saving": "Saving…",
+          "saved": "Saved!"
+        },
+        "dangerZone": {
+          "sectionTitle": "Danger Zone",
+          "sectionHint": "Permanently delete this job and all associated applications.",
+          "deleteJob": "Delete this Job",
+          "confirmMessage": "Are you sure you want to delete {title}? This will also delete all associated applications. This action cannot be undone.",
+          "yesDelete": "Yes, Delete",
+          "deleting": "Deleting…",
+          "cancel": "Cancel"
+        },
+        "toasts": {
+          "saveFailed": "Failed to save changes",
+          "deleteFailed": "Failed to delete job"
+        },
+        "validation": {
+          "titleRequired": "Title is required"
+        }
+      },
+      "applicationForm": {
+        "seoTitle": "Application Form — {title} — Matriq",
+        "seoTitleDefault": "Application Form — Matriq",
+        "loading": "Loading…",
+        "jobNotFound": "Job not found.",
+        "loadFailed": "Failed to load job.",
+        "backToJobs": "Back to Jobs",
+        "title": "Application Form",
+        "description": "Configure the application experience for {title}.",
+        "applicationLink": {
+          "title": "Application Link",
+          "description": "Share this link with candidates so they can apply to this position.",
+          "copy": "Copy",
+          "copied": "Copied!",
+          "notAvailable": "The application link will be available when this job is published (status: {status})."
+        },
+        "requirements": {
+          "title": "Application requirements",
+          "description": "Choose what candidates must provide when applying.",
+          "requireResume": "Require resume/CV",
+          "requireResumeHint": "Candidates must upload a file.",
+          "requireCoverLetter": "Ask for cover letter",
+          "requireCoverLetterHint": "Candidates can write a cover letter.",
+          "save": "Save requirements",
+          "saved": "Saved!",
+          "saving": "Saving…",
+          "saveFailed": "Failed to save requirements."
+        },
+        "trackingLinks": {
+          "title": "Source Tracking Links",
+          "description": "Create unique tracking links for this job to measure where applications come from.",
+          "newLink": "New Link",
+          "loading": "Loading…",
+          "emptyTitle": "No tracking links for this job yet.",
+          "emptyHint": "Create one to start tracking where candidates find this position.",
+          "clicksAndApplications": "{clicks} clicks · {applications} applications",
+          "copyTrackingUrl": "Copy tracking URL",
+          "activate": "Activate",
+          "deactivate": "Deactivate",
+          "delete": "Delete",
+          "active": "Active",
+          "inactive": "Inactive",
+          "createFailed": "Failed to create link",
+          "deleteFailed": "Failed to delete"
+        },
+        "customQuestions": {
+          "title": "Custom Questions",
+          "description": "Customize the questions applicants must answer when applying. All applications include name, email, and phone by default."
+        },
+        "createLinkModal": {
+          "title": "Create Tracking Link",
+          "linkName": "Link Name",
+          "linkNamePlaceholder": "e.g. LinkedIn Spring Campaign",
+          "sourceChannel": "Source Channel",
+          "jobBoards": "Job Boards",
+          "socialMedia": "Social Media",
+          "other": "Other",
+          "utmParameters": "UTM Parameters (optional)",
+          "cancel": "Cancel",
+          "creating": "Creating…",
+          "createLink": "Create Link"
+        },
+        "deleteLinkModal": {
+          "title": "Delete Tracking Link?",
+          "description": "Existing attribution data will be preserved, but new clicks won't be tracked.",
+          "cancel": "Cancel",
+          "delete": "Delete"
+        }
+      },
+      "aiAnalysis": {
+        "seoTitle": "AI Analysis — {title} — Matriq",
+        "seoTitleDefault": "AI Analysis — Matriq",
+        "loading": "Loading…",
+        "jobNotFound": "Job not found.",
+        "loadFailed": "Failed to load job.",
+        "backToJobs": "Back to Jobs",
+        "title": "AI Analysis",
+        "description": "Configure how AI evaluates and scores candidates for {title}.",
+        "premadeTemplates": {
+          "label": "Pre-made templates",
+          "description": "Choose from expert-designed scoring rubrics for common role types."
+        },
+        "templateOptions": {
+          "standard": {
+            "label": "Standard",
+            "description": "3 balanced criteria for any role"
+          },
+          "technical": {
+            "label": "Technical",
+            "description": "5 criteria focused on engineering"
+          },
+          "nonTechnical": {
+            "label": "Non-Technical",
+            "description": "5 criteria for business roles"
+          }
+        },
+        "noCriteriaHint": "No scoring criteria configured yet. Choose a starting point above, or add criteria manually.",
+        "criteriaConfigured": "{count} {unit} configured",
+        "criterionUnit": "criterion",
+        "criteriaUnit": "criteria",
+        "reset": "Reset",
+        "removeTooltip": "Remove",
+        "maxScoreLabel": "Max score: {count}",
+        "keyLabel": "Key:",
+        "unsavedChanges": "Unsaved changes",
+        "saveCriteria": "Save criteria",
+        "toasts": {
+          "autoScoreUpdated": "Auto-score setting updated",
+          "autoScoreUpdateFailed": "Failed to update setting",
+          "jobDescriptionRequired": {
+            "title": "Job description required",
+            "message": "Add a job description first so AI can generate relevant criteria."
+          },
+          "criteriaGenerated": {
+            "title": "Criteria generated",
+            "message": "{count} scoring criteria created from job description."
+          },
+          "aiNotConfigured": {
+            "title": "AI provider not configured",
+            "message": "Set up your AI provider and model before generating criteria.",
+            "link": "Go to AI Settings"
+          },
+          "generateCriteriaFailed": "Failed to generate criteria",
+          "duplicateCriterion": {
+            "title": "Duplicate criterion",
+            "message": "A criterion with key \"{key}\" already exists."
+          },
+          "criteriaSaved": {
+            "title": "Criteria saved",
+            "message": "{count} scoring criteria updated."
+          },
+          "saveCriteriaFailed": "Failed to save criteria"
+        },
+        "autoScore": {
+          "label": "Automatically score every new applicant",
+          "description": "When a candidate applies, AI will automatically analyze their resume against these criteria and assign a score. Requires an AI provider configured in settings plus a resume upload."
+        }
+      },
+      "detail": {
+        "seoTitle": "Pipeline — {title} — Matriq",
+        "seoTitleFallback": "Pipeline — Matriq",
+        "loading": "Loading pipeline…",
+        "jobNotFound": "Job not found or failed to load.",
+        "loadApplicationsFailed": "Failed to load applications.",
+        "backToJobs": "Back to Jobs",
+        "shortcuts": {
+          "candidates": "candidates",
+          "stages": "stages",
+          "actions": "actions"
+        },
+        "focusMode": {
+          "exit": "Exit focus mode (Esc)",
+          "enter": "Focus mode"
+        },
+        "leftPanel": {
+          "searchPlaceholder": "Search candidates…",
+          "candidateCount": "{count} candidate(s)",
+          "filtered": "filtered",
+          "matching": "matching",
+          "ofTotal": "of {count}",
+          "noMatchingCandidates": "No matching candidates",
+          "noCandidatesYet": "No candidates yet",
+          "tryAdjusting": "Try adjusting your search or filters.",
+          "noOneInStage": "No one in {stage} stage.",
+          "clearFilters": "Clear filters",
+          "interviewScheduled": "Interview scheduled",
+          "scorePts": "{score} pts",
+          "score": "Score",
+          "interview": "Interview"
+        },
+        "sort": {
+          "newestFirst": "Newest first",
+          "oldestFirst": "Oldest first",
+          "nameAZ": "Name A → Z",
+          "nameZA": "Name Z → A",
+          "highestScore": "Highest score",
+          "lowestScore": "Lowest score",
+          "recentlyUpdated": "Recently updated",
+          "label": "Sort"
+        },
+        "scoreFilter": {
+          "all": "All",
+          "high": "75+",
+          "medium": "40–74",
+          "low": "< 40",
+          "none": "No score"
+        },
+        "interviewFilter": {
+          "all": "All",
+          "scheduled": "Scheduled",
+          "none": "None"
+        },
+        "properties": "Properties",
+        "centerPanel": {
+          "noCandidatesInStage": "No candidates in {stage}",
+          "switchStageHint": "Switch to another pipeline stage to review candidates.",
+          "fullApplicationPage": "Full application page",
+          "scoring": "Scoring…",
+          "rescore": "Re-score",
+          "scoreCandidate": "Score Candidate",
+          "applied": "Applied {date}",
+          "updated": "Updated {date}",
+          "loadingDetails": "Loading details…"
+        },
+        "tabs": {
+          "overview": "Overview",
+          "aiAnalysis": "AI Analysis",
+          "interviews": "Interviews",
+          "documents": "Documents",
+          "responses": "Responses",
+          "timeline": "Timeline",
+          "properties": "Properties"
+        },
+        "overviewDropdown": {
+          "sections": "Sections",
+          "aiAnalysis": "AI Analysis",
+          "interviews": "Interviews",
+          "documents": "Documents",
+          "responses": "Responses",
+          "properties": "Properties"
+        },
+        "notes": {
+          "title": "Notes",
+          "empty": "No notes yet."
+        },
+        "interviews": {
+          "sectionTitle": "Interviews",
+          "scheduleInterview": "Schedule Interview",
+          "noShow": "No Show",
+          "googleCalendar": "Google Calendar",
+          "openInGoogleCalendar": "Open in Google Calendar",
+          "syncedToGoogleCalendar": "Synced to Google Calendar",
+          "calendarSync": "Calendar Sync",
+          "actions": "Actions:",
+          "rescheduleInterview": "Reschedule Interview",
+          "date": "Date",
+          "time": "Time",
+          "durationMin": "Duration (min)",
+          "cancel": "Cancel",
+          "saving": "Saving…",
+          "reschedule": "Reschedule",
+          "dateTime": "Date & Time",
+          "duration": "Duration",
+          "minutes": "{count} minutes",
+          "type": "Type",
+          "location": "Location",
+          "interviewers": "Interviewers",
+          "notes": "Notes",
+          "editDetails": "Edit Details",
+          "fullPage": "Full Page",
+          "titleLabel": "Title",
+          "locationPlaceholder": "Zoom link, office address…",
+          "notesPlaceholder": "Interview notes…",
+          "interviewersLabel": "Interviewers",
+          "namePlaceholder": "Name or email",
+          "addInterviewer": "Add interviewer",
+          "saveChanges": "Save Changes",
+          "noInterviewsScheduled": "No interviews scheduled",
+          "scheduleToStart": "Schedule an interview to start the process.",
+          "titleRequired": "Title is required",
+          "saveFailed": "Failed to save changes",
+          "rescheduleDateTimeRequired": "Date and time are required",
+          "rescheduleFailed": "Failed to reschedule",
+          "updateStatusFailed": "Failed to update status",
+          "types": {
+            "video": "Video Call",
+            "phone": "Phone",
+            "inPerson": "In Person",
+            "technical": "Technical",
+            "panel": "Panel",
+            "takeHome": "Take Home"
+          },
+          "typeLabels": {
+            "video": "Video",
+            "phone": "Phone",
+            "inPerson": "In Person",
+            "technical": "Technical",
+            "panel": "Panel",
+            "takeHome": "Take Home"
+          },
+          "transitions": {
+            "scheduled": "Re-schedule",
+            "completed": "Completed",
+            "cancelled": "Cancel",
+            "noShow": "No Show"
+          }
+        },
+        "documents": {
+          "sectionTitle": "Documents",
+          "preview": "Preview",
+          "download": "Download",
+          "noDocumentsUploaded": "No documents uploaded",
+          "willAppearHere": "Documents will appear here once uploaded.",
+          "types": {
+            "coverLetter": "Cover Letter",
+            "resume": "Resume",
+            "other": "Other"
+          }
+        },
+        "responses": {
+          "sectionTitle": "Responses",
+          "unknownQuestion": "Unknown question",
+          "noResponses": "No responses",
+          "willAppearHere": "Application form responses will appear here.",
+          "yes": "Yes",
+          "no": "No"
+        },
+        "timeline": {
+          "sectionTitle": "Timeline",
+          "loading": "Loading timeline…",
+          "retry": "Retry",
+          "noActivity": "No activity recorded yet.",
+          "willAppearHere": "Activity for this candidate will appear here.",
+          "loadFailed": "Failed to load timeline",
+          "actions": {
+            "created": "Created",
+            "updated": "Updated",
+            "deleted": "Deleted",
+            "statusChanged": "Status changed",
+            "commentAdded": "Comment added",
+            "scored": "Scored",
+            "scheduled": "Scheduled"
+          },
+          "describeStatusChanged": "{actor} changed {resource} status from {from} to {to}",
+          "describeScored": "{actor} scored {resource} — {score} pts",
+          "describeGeneric": "{actor} {action} {resource}",
+          "system": "System",
+          "scorePts": "{score} pts"
+        },
+        "statusTransitions": {
+          "new": "Re-open",
+          "screening": "Screening",
+          "interview": "Interview",
+          "offer": "Offer",
+          "hired": "Hired",
+          "rejected": "Reject"
+        },
+        "scoring": {
+          "candidateScored": "Candidate scored",
+          "aiAnalysisComplete": "AI analysis complete.",
+          "aiNotConfiguredTitle": "AI provider not configured",
+          "aiNotConfiguredMessage": "Set up your AI provider in Settings first.",
+          "goToAiSettings": "Go to AI Settings",
+          "noScoringCriteriaTitle": "No scoring criteria",
+          "noScoringCriteriaMessage": "Add scoring criteria to this job first.",
+          "scoringFailedTitle": "Scoring failed",
+          "scoringFailedDefault": "An unexpected error occurred."
+        },
+        "docPreview": {
+          "close": "Close",
+          "download": "Download",
+          "documentPreview": "Document preview",
+          "previewNotAvailable": "Preview not available for this file type",
+          "downloadInstead": "Download instead"
+        },
+        "mobileBar": {
+          "noCandidatesInStage": "No candidates in {stage}"
+        }
+      }
+    },
     "settings": {
       "errorBoundary": {
         "title": "Something went wrong",

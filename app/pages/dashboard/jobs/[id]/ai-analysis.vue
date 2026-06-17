@@ -12,12 +12,15 @@ const route = useRoute()
 const jobId = route.params.id as string
 const toast = useToast()
 const { track } = useTrack()
+const { t } = useI18n()
 
 const { job, status: jobFetchStatus, error: jobError, updateJob } = useJob(jobId)
 
 useSeoMeta({
   title: computed(() =>
-    job.value ? `AI Analysis — ${job.value.title} — Matriq` : 'AI Analysis — Matriq',
+    job.value
+      ? t('dashboard.jobs.aiAnalysis.seoTitle', { title: job.value.title })
+      : t('dashboard.jobs.aiAnalysis.seoTitleDefault'),
   ),
   robots: 'noindex, nofollow',
 })
@@ -35,14 +38,14 @@ type ScoringCriterionDraft = {
   weight: number
 }
 
-const categoryLabels: Record<string, string> = {
-  technical: 'Technical',
-  experience: 'Experience',
-  soft_skills: 'Soft Skills',
-  education: 'Education',
-  culture: 'Culture',
-  custom: 'Custom',
-}
+const categoryLabels = computed<Record<string, string>>(() => ({
+  technical: t('dashboard.jobs.new.scoring.categories.technical'),
+  experience: t('dashboard.jobs.new.scoring.categories.experience'),
+  soft_skills: t('dashboard.jobs.new.scoring.categories.softSkills'),
+  education: t('dashboard.jobs.new.scoring.categories.education'),
+  culture: t('dashboard.jobs.new.scoring.categories.culture'),
+  custom: t('dashboard.jobs.new.scoring.categories.custom'),
+}))
 
 const categoryColorClasses: Record<string, string> = {
   technical: 'bg-blue-50 text-blue-700 ring-blue-200 dark:bg-blue-950/50 dark:text-blue-300 dark:ring-blue-800',
@@ -106,9 +109,9 @@ async function toggleAutoScore() {
       method: 'PATCH',
       body: { autoScoreOnApply: autoScoreOnApply.value },
     })
-    toast.success('Auto-score setting updated')
+    toast.success(t('dashboard.jobs.aiAnalysis.toasts.autoScoreUpdated'))
   } catch (err: any) {
-    toast.error('Failed to update setting', { message: err?.data?.statusMessage })
+    toast.error(t('dashboard.jobs.aiAnalysis.toasts.autoScoreUpdateFailed'), { message: err?.data?.statusMessage })
     autoScoreOnApply.value = !autoScoreOnApply.value
   } finally {
     isSavingAutoScore.value = false
@@ -155,7 +158,10 @@ const isGeneratingCriteria = ref(false)
 
 async function generateAiCriteria() {
   if (!job.value?.description) {
-    toast.warning('Job description required', 'Add a job description first so AI can generate relevant criteria.')
+    toast.warning(
+      t('dashboard.jobs.aiAnalysis.toasts.jobDescriptionRequired.title'),
+      t('dashboard.jobs.aiAnalysis.toasts.jobDescriptionRequired.message'),
+    )
     return
   }
   isGeneratingCriteria.value = true
@@ -176,20 +182,23 @@ async function generateAiCriteria() {
       weight: c.weight ?? 50,
     }))
     track('ai_criteria_generated', { job_id: jobId, criteria_count: scoringCriteria.value.length })
-    toast.success('Criteria generated', `${scoringCriteria.value.length} scoring criteria created from job description.`)
+    toast.success(
+      t('dashboard.jobs.aiAnalysis.toasts.criteriaGenerated.title'),
+      t('dashboard.jobs.aiAnalysis.toasts.criteriaGenerated.message', { count: scoringCriteria.value.length }),
+    )
   } catch (err: any) {
     const statusCode = err?.data?.statusCode ?? err?.statusCode
     const statusMessage = err?.data?.statusMessage ?? ''
     if (statusCode === 422 && statusMessage.includes('AI provider not configured')) {
       toast.add({
         type: 'warning',
-        title: 'AI provider not configured',
-        message: 'Set up your AI provider and model before generating criteria.',
-        link: { label: 'Go to AI Settings', href: '/dashboard/settings/ai' },
+        title: t('dashboard.jobs.aiAnalysis.toasts.aiNotConfigured.title'),
+        message: t('dashboard.jobs.aiAnalysis.toasts.aiNotConfigured.message'),
+        link: { label: t('dashboard.jobs.aiAnalysis.toasts.aiNotConfigured.link'), href: '/dashboard/settings/ai' },
         duration: 10000,
       })
     } else {
-      toast.error('Failed to generate criteria', { message: statusMessage })
+      toast.error(t('dashboard.jobs.aiAnalysis.toasts.generateCriteriaFailed'), { message: statusMessage })
     }
   } finally {
     isGeneratingCriteria.value = false
@@ -223,7 +232,10 @@ function addCustomCriterion() {
 
   const keyExists = scoringCriteria.value.some(c => c.key === f.key)
   if (keyExists) {
-    toast.warning('Duplicate criterion', `A criterion with key "${f.key}" already exists.`)
+    toast.warning(
+      t('dashboard.jobs.aiAnalysis.toasts.duplicateCriterion.title'),
+      t('dashboard.jobs.aiAnalysis.toasts.duplicateCriterion.message', { key: f.key }),
+    )
     return
   }
 
@@ -268,10 +280,13 @@ async function saveCriteria() {
     })
     hasUnsavedChanges.value = false
     track('scoring_criteria_saved', { job_id: jobId, criteria_count: scoringCriteria.value.length })
-    toast.success('Criteria saved', `${scoringCriteria.value.length} scoring criteria updated.`)
+    toast.success(
+      t('dashboard.jobs.aiAnalysis.toasts.criteriaSaved.title'),
+      t('dashboard.jobs.aiAnalysis.toasts.criteriaSaved.message', { count: scoringCriteria.value.length }),
+    )
     await refreshCriteria()
   } catch (err: any) {
-    toast.error('Failed to save criteria', { message: err?.data?.statusMessage })
+    toast.error(t('dashboard.jobs.aiAnalysis.toasts.saveCriteriaFailed'), { message: err?.data?.statusMessage })
   } finally {
     isSaving.value = false
   }
@@ -300,7 +315,7 @@ function resetCriteria() {
 
     <!-- Loading -->
     <div v-if="jobFetchStatus === 'pending' || criteriaFetchStatus === 'pending'" class="text-center py-12 text-surface-400">
-      Loading…
+      {{ $t('dashboard.jobs.aiAnalysis.loading') }}
     </div>
 
     <!-- Error -->
@@ -308,16 +323,16 @@ function resetCriteria() {
       v-else-if="jobError"
       class="rounded-lg border border-danger-200 dark:border-danger-800 bg-danger-50 dark:bg-danger-950 p-4 text-sm text-danger-700 dark:text-danger-400"
     >
-      {{ jobError.statusCode === 404 ? 'Job not found.' : 'Failed to load job.' }}
-      <NuxtLink :to="$localePath('/dashboard')" class="underline ml-1">Back to Jobs</NuxtLink>
+      {{ jobError.statusCode === 404 ? $t('dashboard.jobs.aiAnalysis.jobNotFound') : $t('dashboard.jobs.aiAnalysis.loadFailed') }}
+      <NuxtLink :to="$localePath('/dashboard')" class="underline ml-1">{{ $t('dashboard.jobs.aiAnalysis.backToJobs') }}</NuxtLink>
     </div>
 
     <template v-else-if="job">
       <!-- Header -->
       <div class="mb-6">
-        <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-50">AI Analysis</h1>
+        <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-50">{{ $t('dashboard.jobs.aiAnalysis.title') }}</h1>
         <p class="text-sm text-surface-500 dark:text-surface-400 mt-1">
-          Configure how AI evaluates and scores candidates for <strong>{{ job.title }}</strong>.
+          {{ $t('dashboard.jobs.aiAnalysis.description', { title: job.title }) }}
         </p>
       </div>
 
@@ -334,9 +349,9 @@ function resetCriteria() {
               <Brain class="size-5 text-brand-600 dark:text-brand-400" />
             </div>
             <div>
-              <span class="block text-sm font-semibold text-surface-900 dark:text-surface-100">Pre-made templates</span>
+              <span class="block text-sm font-semibold text-surface-900 dark:text-surface-100">{{ $t('dashboard.jobs.new.scoring.modes.premade.label') }}</span>
               <span class="text-xs text-surface-500 dark:text-surface-400 mt-1 block leading-relaxed">
-                Choose from expert-designed scoring rubrics for common role types.
+                {{ $t('dashboard.jobs.new.scoring.modes.premade.description') }}
               </span>
             </div>
           </button>
@@ -351,9 +366,9 @@ function resetCriteria() {
               <Sparkles class="size-5 text-purple-600 dark:text-purple-400" />
             </div>
             <div>
-              <span class="block text-sm font-semibold text-surface-900 dark:text-surface-100">Generate from job description</span>
+              <span class="block text-sm font-semibold text-surface-900 dark:text-surface-100">{{ $t('dashboard.jobs.new.scoring.modes.ai.label') }}</span>
               <span class="text-xs text-surface-500 dark:text-surface-400 mt-1 block leading-relaxed">
-                AI analyzes your job description and creates tailored criteria.
+                {{ $t('dashboard.jobs.new.scoring.modes.ai.description') }}
               </span>
             </div>
             <span v-if="isGeneratingCriteria" class="absolute top-3 right-3">
@@ -371,9 +386,9 @@ function resetCriteria() {
               <SlidersHorizontal class="size-5 text-emerald-600 dark:text-emerald-400" />
             </div>
             <div>
-              <span class="block text-sm font-semibold text-surface-900 dark:text-surface-100">Write your own</span>
+              <span class="block text-sm font-semibold text-surface-900 dark:text-surface-100">{{ $t('dashboard.jobs.new.scoring.modes.custom.label') }}</span>
               <span class="text-xs text-surface-500 dark:text-surface-400 mt-1 block leading-relaxed">
-                Create custom scoring criteria tailored to your exact needs.
+                {{ $t('dashboard.jobs.new.scoring.modes.custom.description') }}
               </span>
             </div>
           </button>
@@ -383,10 +398,10 @@ function resetCriteria() {
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
           <button
             v-for="tmpl in [
-              { key: 'standard', label: 'Standard', desc: '3 balanced criteria for any role' },
-              { key: 'technical', label: 'Technical', desc: '5 criteria focused on engineering' },
-              { key: 'non_technical', label: 'Non-Technical', desc: '5 criteria for business roles' },
-            ] as const"
+              { key: 'standard' as const, label: $t('dashboard.jobs.aiAnalysis.templateOptions.standard.label'), desc: $t('dashboard.jobs.aiAnalysis.templateOptions.standard.description') },
+              { key: 'technical' as const, label: $t('dashboard.jobs.aiAnalysis.templateOptions.technical.label'), desc: $t('dashboard.jobs.aiAnalysis.templateOptions.technical.description') },
+              { key: 'non_technical' as const, label: $t('dashboard.jobs.aiAnalysis.templateOptions.nonTechnical.label'), desc: $t('dashboard.jobs.aiAnalysis.templateOptions.nonTechnical.description') },
+            ]"
             :key="tmpl.key"
             type="button"
             class="p-4 rounded-lg border text-left transition-all"
@@ -402,7 +417,7 @@ function resetCriteria() {
 
         <!-- No criteria hint -->
         <div class="text-center py-4 text-sm text-surface-400">
-          <p>No scoring criteria configured yet. Choose a starting point above, or add criteria manually.</p>
+          <p>{{ $t('dashboard.jobs.aiAnalysis.noCriteriaHint') }}</p>
         </div>
       </div>
 
@@ -410,7 +425,7 @@ function resetCriteria() {
       <div v-if="scoringCriteria.length > 0" class="space-y-4">
         <div class="flex items-center justify-between">
           <h3 class="text-sm font-semibold text-surface-800 dark:text-surface-200">
-            {{ scoringCriteria.length }} {{ scoringCriteria.length === 1 ? 'criterion' : 'criteria' }} configured
+            {{ $t('dashboard.jobs.aiAnalysis.criteriaConfigured', { count: scoringCriteria.length, unit: scoringCriteria.length === 1 ? $t('dashboard.jobs.aiAnalysis.criterionUnit') : $t('dashboard.jobs.aiAnalysis.criteriaUnit') }) }}
           </h3>
           <div class="flex items-center gap-2">
             <button
@@ -420,14 +435,14 @@ function resetCriteria() {
               @click="resetCriteria"
             >
               <RotateCcw class="size-3" />
-              Reset
+              {{ $t('dashboard.jobs.aiAnalysis.reset') }}
             </button>
             <button
               type="button"
               class="text-xs text-danger-600 dark:text-danger-400 hover:underline"
               @click="scoringCriteria = []"
             >
-              Clear all
+              {{ $t('dashboard.jobs.new.scoring.clearAll') }}
             </button>
           </div>
         </div>
@@ -456,7 +471,7 @@ function resetCriteria() {
               <button
                 type="button"
                 class="rounded p-1 text-surface-400 hover:text-danger-600 dark:hover:text-danger-400 hover:bg-danger-50 dark:hover:bg-danger-950 transition-colors shrink-0"
-                title="Remove"
+                :title="$t('dashboard.jobs.aiAnalysis.removeTooltip')"
                 @click="removeCriterion(criterion.key)"
               >
                 <Trash2 class="size-4" />
@@ -465,7 +480,7 @@ function resetCriteria() {
 
             <!-- Weight slider -->
             <div class="flex items-center gap-4">
-              <label class="text-xs font-medium text-surface-500 dark:text-surface-400 shrink-0 w-12">Weight</label>
+              <label class="text-xs font-medium text-surface-500 dark:text-surface-400 shrink-0 w-12">{{ $t('dashboard.jobs.new.scoring.weight') }}</label>
               <input
                 type="range"
                 :min="0"
@@ -479,8 +494,8 @@ function resetCriteria() {
             </div>
 
             <div class="flex items-center gap-4 mt-2 text-xs text-surface-400">
-              <span>Max score: {{ criterion.maxScore }}</span>
-              <span>Key: <code class="rounded bg-surface-100 dark:bg-surface-800 px-1 py-0.5 font-mono text-[10px]">{{ criterion.key }}</code></span>
+              <span>{{ $t('dashboard.jobs.aiAnalysis.maxScoreLabel', { count: criterion.maxScore }) }}</span>
+              <span>{{ $t('dashboard.jobs.aiAnalysis.keyLabel') }} <code class="rounded bg-surface-100 dark:bg-surface-800 px-1 py-0.5 font-mono text-[10px]">{{ criterion.key }}</code></span>
             </div>
           </div>
         </div>
@@ -493,7 +508,7 @@ function resetCriteria() {
           @click="showCustomForm = true"
         >
           <Plus class="size-4" />
-          Add criterion
+          {{ $t('dashboard.jobs.new.scoring.addCriterion') }}
         </button>
 
         <!-- Save / Reset bar -->
@@ -506,28 +521,28 @@ function resetCriteria() {
           >
             <Loader2 v-if="isSaving" class="size-4 animate-spin" />
             <Save v-else class="size-4" />
-            Save criteria
+            {{ $t('dashboard.jobs.aiAnalysis.saveCriteria') }}
           </button>
-          <span v-if="hasUnsavedChanges" class="text-xs text-amber-600 dark:text-amber-400">Unsaved changes</span>
+          <span v-if="hasUnsavedChanges" class="text-xs text-amber-600 dark:text-amber-400">{{ $t('dashboard.jobs.aiAnalysis.unsavedChanges') }}</span>
         </div>
       </div>
 
       <!-- Custom criterion form -->
       <div v-if="showCustomForm" class="rounded-xl border border-surface-200 dark:border-surface-800 bg-surface-50 dark:bg-surface-900/50 p-5 space-y-4 mt-6">
-        <h3 class="text-sm font-semibold text-surface-800 dark:text-surface-200">Add custom criterion</h3>
+        <h3 class="text-sm font-semibold text-surface-800 dark:text-surface-200">{{ $t('dashboard.jobs.new.scoring.addCustomCriterion') }}</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-medium text-surface-700 dark:text-surface-300 mb-1">Name *</label>
+            <label class="block text-xs font-medium text-surface-700 dark:text-surface-300 mb-1">{{ $t('dashboard.jobs.new.scoring.form.name') }}</label>
             <input
               v-model="customCriterionForm.name"
               @input="customCriterionForm.key = autoGenerateKey(customCriterionForm.name)"
               type="text"
-              placeholder="e.g. React Expertise"
+              :placeholder="$t('dashboard.jobs.new.scoring.form.namePlaceholder')"
               class="w-full rounded-lg border border-surface-300 dark:border-surface-700 px-3 py-2 text-sm bg-white dark:bg-surface-900 text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
           <div>
-            <label class="block text-xs font-medium text-surface-700 dark:text-surface-300 mb-1">Category</label>
+            <label class="block text-xs font-medium text-surface-700 dark:text-surface-300 mb-1">{{ $t('dashboard.jobs.new.scoring.form.category') }}</label>
             <select
               v-model="customCriterionForm.category"
               class="w-full rounded-lg border border-surface-300 dark:border-surface-700 px-3 py-2 text-sm bg-white dark:bg-surface-900 text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-brand-500"
@@ -537,17 +552,17 @@ function resetCriteria() {
           </div>
         </div>
         <div>
-          <label class="block text-xs font-medium text-surface-700 dark:text-surface-300 mb-1">Description</label>
+          <label class="block text-xs font-medium text-surface-700 dark:text-surface-300 mb-1">{{ $t('dashboard.jobs.new.scoring.form.description') }}</label>
           <textarea
             v-model="customCriterionForm.description"
             rows="2"
-            placeholder="Describe what the AI should evaluate for this criterion..."
+            :placeholder="$t('dashboard.jobs.new.scoring.form.descriptionPlaceholder')"
             class="w-full rounded-lg border border-surface-300 dark:border-surface-700 px-3 py-2 text-sm bg-white dark:bg-surface-900 text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-medium text-surface-700 dark:text-surface-300 mb-1">Max Score</label>
+            <label class="block text-xs font-medium text-surface-700 dark:text-surface-300 mb-1">{{ $t('dashboard.jobs.new.scoring.form.maxScore') }}</label>
             <input
               v-model.number="customCriterionForm.maxScore"
               type="number"
@@ -557,7 +572,7 @@ function resetCriteria() {
             />
           </div>
           <div>
-            <label class="block text-xs font-medium text-surface-700 dark:text-surface-300 mb-1">Initial Weight (0–100)</label>
+            <label class="block text-xs font-medium text-surface-700 dark:text-surface-300 mb-1">{{ $t('dashboard.jobs.new.scoring.form.initialWeight') }}</label>
             <input
               v-model.number="customCriterionForm.weight"
               type="number"
@@ -574,14 +589,14 @@ function resetCriteria() {
             class="px-4 py-2 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             @click="addCustomCriterion"
           >
-            Add criterion
+            {{ $t('dashboard.jobs.new.scoring.addCriterion') }}
           </button>
           <button
             type="button"
             class="px-4 py-2 text-sm font-medium text-surface-600 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-lg transition-colors"
             @click="showCustomForm = false"
           >
-            Cancel
+            {{ $t('dashboard.jobs.new.scoring.cancel') }}
           </button>
         </div>
       </div>
@@ -597,10 +612,10 @@ function resetCriteria() {
           />
           <div>
             <span class="block text-sm font-semibold text-surface-900 dark:text-surface-100">
-              Automatically score every new applicant
+              {{ $t('dashboard.jobs.aiAnalysis.autoScore.label') }}
             </span>
             <span class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 block leading-relaxed">
-              When a candidate applies, AI will automatically analyze their resume against these criteria and assign a score. Requires an AI provider configured in settings plus a resume upload.
+              {{ $t('dashboard.jobs.aiAnalysis.autoScore.description') }}
             </span>
           </div>
         </label>
