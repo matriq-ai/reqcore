@@ -1,12 +1,14 @@
 <script setup lang="ts">
+const { t } = useI18n();
+
 definePageMeta({
     layout: "auth",
     middleware: ["guest"],
 });
 
 useSeoMeta({
-    title: "Reset Password — Matriq",
-    description: "Set a new password for your Matriq account",
+    title: t("auth.resetPassword.pageTitle"),
+    description: t("auth.resetPassword.pageDescription"),
     robots: "noindex, nofollow",
 });
 
@@ -28,22 +30,22 @@ async function handleResetPassword() {
     error.value = "";
 
     if (!token.value) {
-        error.value = "Invalid or missing reset token. Please request a new password reset link.";
+        error.value = t("auth.resetPassword.invalidTokenError");
         return;
     }
 
     if (!newPassword.value) {
-        error.value = "Password is required.";
+        error.value = t("auth.resetPassword.passwordRequired");
         return;
     }
 
     if (newPassword.value.length < 8) {
-        error.value = "Password must be at least 8 characters.";
+        error.value = t("auth.resetPassword.passwordMinLength");
         return;
     }
 
     if (newPassword.value !== confirmPassword.value) {
-        error.value = "Passwords do not match.";
+        error.value = t("auth.resetPassword.passwordsDoNotMatch");
         return;
     }
 
@@ -57,13 +59,13 @@ async function handleResetPassword() {
 
         if (result.error) {
             error.value =
-                result.error.message ?? "Failed to reset password. The link may have expired.";
+                result.error.message ?? t("auth.resetPassword.resetFailedExpired");
             isLoading.value = false;
             return;
         }
     } catch (e: unknown) {
         error.value =
-            e instanceof Error ? e.message : "Failed to reset password. Please try again.";
+            e instanceof Error ? e.message : t("auth.resetPassword.resetFailedDefault");
         isLoading.value = false;
         return;
     }
@@ -79,21 +81,21 @@ async function handleResetPassword() {
         <h2
             class="text-xl font-semibold text-center text-surface-900 dark:text-surface-100 mb-2"
         >
-            Set new password
+            {{ $t('auth.resetPassword.heading') }}
         </h2>
 
         <template v-if="success">
             <div
                 class="rounded-md border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950 p-3 text-sm text-green-700 dark:text-green-400"
             >
-                Your password has been reset successfully.
+                {{ $t('auth.resetPassword.successMessage') }}
             </div>
 
             <NuxtLink
                 :to="$localePath('/auth/sign-in')"
                 class="mt-2 px-4 py-2.5 bg-brand-600 text-white rounded-md text-sm font-medium cursor-pointer hover:bg-brand-700 transition-colors text-center block"
             >
-                Sign in with new password
+                {{ $t('auth.resetPassword.signInWithNewPassword') }}
             </NuxtLink>
         </template>
 
@@ -102,15 +104,15 @@ async function handleResetPassword() {
                 class="rounded-md border border-danger-200 dark:border-danger-800 bg-danger-50 dark:bg-danger-950 p-3 text-sm text-danger-700 dark:text-danger-400"
             >
                 {{ tokenError === 'INVALID_TOKEN'
-                    ? "This password reset link is invalid or has expired."
-                    : "Invalid password reset link. Please request a new one." }}
+                    ? $t('auth.resetPassword.invalidTokenMessage')
+                    : $t('auth.resetPassword.invalidLinkMessage') }}
             </div>
 
             <NuxtLink
                 :to="$localePath('/auth/forgot-password')"
                 class="mt-2 px-4 py-2.5 bg-brand-600 text-white rounded-md text-sm font-medium cursor-pointer hover:bg-brand-700 transition-colors text-center block"
             >
-                Request new reset link
+                {{ $t('auth.resetPassword.requestNewLink') }}
             </NuxtLink>
         </template>
 
@@ -126,7 +128,7 @@ async function handleResetPassword() {
                 <label
                     class="flex flex-col gap-1 text-sm font-medium text-surface-700 dark:text-surface-300"
                 >
-                    <span>New password</span>
+                    <span>{{ $t('auth.resetPassword.newPasswordLabel') }}</span>
                     <input
                         v-model="newPassword"
                         type="password"
@@ -140,7 +142,7 @@ async function handleResetPassword() {
                 <label
                     class="flex flex-col gap-1 text-sm font-medium text-surface-700 dark:text-surface-300"
                 >
-                    <span>Confirm new password</span>
+                    <span>{{ $t('auth.resetPassword.confirmNewPasswordLabel') }}</span>
                     <input
                         v-model="confirmPassword"
                         type="password"
@@ -156,7 +158,7 @@ async function handleResetPassword() {
                     :disabled="isLoading"
                     class="mt-2 px-4 py-2.5 bg-brand-600 text-white rounded-md text-sm font-medium cursor-pointer hover:bg-brand-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
                 >
-                    {{ isLoading ? "Resetting…" : "Reset password" }}
+                    {{ isLoading ? $t('auth.resetPassword.resetting') : $t('auth.resetPassword.submitButton') }}
                 </button>
             </form>
 
@@ -165,7 +167,7 @@ async function handleResetPassword() {
                     :to="$localePath('/auth/sign-in')"
                     class="text-brand-600 dark:text-brand-400 hover:underline"
                 >
-                    Back to sign in
+                    {{ $t('auth.resetPassword.backToSignIn') }}
                 </NuxtLink>
             </p>
         </template>

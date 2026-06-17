@@ -9,9 +9,11 @@ import { Loader2, AlertTriangle } from 'lucide-vue-next'
 
 definePageMeta({})
 
+const { t } = useI18n()
+
 useSeoMeta({
   title: 'Add AI model — Matriq',
-  description: 'Connect a new AI provider and model.',
+  description: t('dashboard.settings.ai.newPage.seoDescription'),
 })
 
 interface AiConfigRow {
@@ -77,8 +79,8 @@ function onCancel() {
     >
       <AlertTriangle class="size-5 shrink-0 mt-0.5" />
       <div>
-        <p class="font-semibold mb-1">Insufficient permissions</p>
-        <p>You don't have permission to manage AI settings. Contact your organization owner or admin.</p>
+        <p class="font-semibold mb-1">{{ $t('dashboard.settings.ai.insufficientPermissions') }}</p>
+        <p>{{ $t('dashboard.settings.ai.insufficientPermissionsDescription') }}</p>
       </div>
     </div>
 

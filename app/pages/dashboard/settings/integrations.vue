@@ -6,9 +6,11 @@ import {
 
 definePageMeta({})
 
+const { t } = useI18n()
+
 useSeoMeta({
   title: 'Integrations — Matriq',
-  description: 'Connect your calendar and other services',
+  description: t('dashboard.settings.integrations.seoDescription'),
 })
 
 const route = useRoute()
@@ -26,14 +28,14 @@ onMounted(() => {
   const error = route.query.error as string | undefined
 
   if (success === 'connected') {
-    successMessage.value = 'Google Calendar connected successfully! Your interviews will now sync automatically.'
+    successMessage.value = t('dashboard.settings.integrations.connectedSuccess')
     refresh()
   }
   else if (error === 'consent_denied') {
-    errorMessage.value = 'Calendar connection was cancelled. You can try again anytime.'
+    errorMessage.value = t('dashboard.settings.integrations.consentDenied')
   }
   else if (error === 'oauth_failed') {
-    errorMessage.value = 'Failed to connect Google Calendar. Please try again.'
+    errorMessage.value = t('dashboard.settings.integrations.oauthFailed')
   }
 
   // Clear query params after reading
@@ -50,10 +52,10 @@ async function handleDisconnect() {
   try {
     await disconnect()
     showDisconnectConfirm.value = false
-    successMessage.value = 'Google Calendar disconnected.'
+    successMessage.value = t('dashboard.settings.integrations.disconnectedSuccess')
   }
   catch {
-    errorMessage.value = 'Failed to disconnect. Please try again.'
+    errorMessage.value = t('dashboard.settings.integrations.disconnectFailed')
   }
   finally {
     isDisconnecting.value = false
@@ -65,10 +67,10 @@ async function handleDisconnect() {
   <div class="mx-auto max-w-2xl">
     <div class="mb-6">
       <h1 class="text-lg font-semibold text-surface-900 dark:text-surface-100">
-        Integrations
+        {{ $t('dashboard.settings.integrations.title') }}
       </h1>
       <p class="mt-1 text-sm text-surface-500 dark:text-surface-400">
-        Connect external services to enhance your recruiting workflow.
+        {{ $t('dashboard.settings.integrations.subtitle') }}
       </p>
     </div>
 
@@ -118,10 +120,10 @@ async function handleDisconnect() {
         </div>
         <div class="flex-1 min-w-0">
           <h2 class="text-base font-semibold text-surface-900 dark:text-surface-100">
-            Google Calendar
+            {{ $t('dashboard.settings.integrations.googleCalendar') }}
           </h2>
           <p class="text-sm text-surface-500 dark:text-surface-400">
-            Two-way sync for interview scheduling
+            {{ $t('dashboard.settings.integrations.twoWaySyncDescription') }}
           </p>
         </div>
 
@@ -131,13 +133,13 @@ async function handleDisconnect() {
           class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800"
         >
           <span class="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-          Connected
+          {{ $t('dashboard.settings.integrations.connected') }}
         </div>
         <div
           v-else-if="!isAvailable"
           class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium bg-surface-100 dark:bg-surface-800 text-surface-500 dark:text-surface-400"
         >
-          Not configured
+          {{ $t('dashboard.settings.integrations.notConfigured') }}
         </div>
       </div>
 
@@ -151,11 +153,11 @@ async function handleDisconnect() {
         <!-- Not configured (admin needs to set env vars) -->
         <div v-else-if="!isAvailable" class="space-y-3">
           <p class="text-sm text-surface-600 dark:text-surface-400">
-            Google Calendar integration requires server configuration. A server administrator must set the
+            {{ $t('dashboard.settings.integrations.notConfiguredDescriptionPrefix') }}
             <code class="text-xs bg-surface-100 dark:bg-surface-800 px-1.5 py-0.5 rounded font-mono">GOOGLE_CLIENT_ID</code>
-            and
+            {{ $t('dashboard.settings.integrations.and') }}
             <code class="text-xs bg-surface-100 dark:bg-surface-800 px-1.5 py-0.5 rounded font-mono">GOOGLE_CLIENT_SECRET</code>
-            environment variables before users can connect.
+            {{ $t('dashboard.settings.integrations.notConfiguredDescriptionSuffix') }}
           </p>
           <div class="flex items-center gap-4">
             <a
@@ -164,7 +166,7 @@ async function handleDisconnect() {
               rel="noopener noreferrer"
               class="inline-flex items-center gap-1.5 text-sm text-brand-600 dark:text-brand-400 hover:underline"
             >
-              Setup guide
+              {{ $t('dashboard.settings.integrations.setupGuide') }}
               <ExternalLink class="size-3.5" />
             </a>
             <a
@@ -173,7 +175,7 @@ async function handleDisconnect() {
               rel="noopener noreferrer"
               class="inline-flex items-center gap-1.5 text-sm text-surface-500 dark:text-surface-400 hover:underline"
             >
-              Google Cloud Console
+              {{ $t('dashboard.settings.integrations.googleCloudConsole') }}
               <ExternalLink class="size-3.5" />
             </a>
           </div>
@@ -184,18 +186,18 @@ async function handleDisconnect() {
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="space-y-1">
               <div class="text-xs font-medium text-surface-400 dark:text-surface-500 uppercase tracking-wider">
-                Account
+                {{ $t('dashboard.settings.integrations.account') }}
               </div>
               <div class="text-sm text-surface-900 dark:text-surface-100">
-                {{ calendarStatus.accountEmail || 'Unknown' }}
+                {{ calendarStatus.accountEmail || $t('dashboard.settings.integrations.unknown') }}
               </div>
             </div>
             <div class="space-y-1">
               <div class="text-xs font-medium text-surface-400 dark:text-surface-500 uppercase tracking-wider">
-                Calendar
+                {{ $t('dashboard.settings.integrations.calendar') }}
               </div>
               <div class="text-sm text-surface-900 dark:text-surface-100">
-                {{ calendarStatus.calendarId === 'primary' ? 'Primary calendar' : calendarStatus.calendarId }}
+                {{ calendarStatus.calendarId === 'primary' ? $t('dashboard.settings.integrations.primaryCalendar') : calendarStatus.calendarId }}
               </div>
             </div>
           </div>
@@ -204,13 +206,13 @@ async function handleDisconnect() {
           <div class="flex items-center gap-2 text-sm">
             <RefreshCw class="size-3.5 text-surface-400" />
             <span class="text-surface-600 dark:text-surface-400">
-              Two-way sync:
+              {{ $t('dashboard.settings.integrations.twoWaySync') }}
               <span
                 :class="calendarStatus.webhookActive
                   ? 'text-emerald-600 dark:text-emerald-400 font-medium'
                   : 'text-amber-600 dark:text-amber-400'"
               >
-                {{ calendarStatus.webhookActive ? 'Active' : 'Pending setup' }}
+                {{ calendarStatus.webhookActive ? $t('dashboard.settings.integrations.active') : $t('dashboard.settings.integrations.pendingSetup') }}
               </span>
             </span>
           </div>
@@ -219,19 +221,19 @@ async function handleDisconnect() {
           <div class="rounded-lg bg-surface-50 dark:bg-surface-800/50 p-4 space-y-2">
             <div class="flex items-center gap-2 text-sm text-surface-600 dark:text-surface-400">
               <Check class="size-4 text-emerald-500 shrink-0" />
-              Interviews automatically appear in your Google Calendar
+              {{ $t('dashboard.settings.integrations.feature.autoAppear') }}
             </div>
             <div class="flex items-center gap-2 text-sm text-surface-600 dark:text-surface-400">
               <Check class="size-4 text-emerald-500 shrink-0" />
-              Candidates receive calendar invites as attendees
+              {{ $t('dashboard.settings.integrations.feature.candidatesReceiveInvites') }}
             </div>
             <div class="flex items-center gap-2 text-sm text-surface-600 dark:text-surface-400">
               <Check class="size-4 text-emerald-500 shrink-0" />
-              RSVP responses sync back automatically
+              {{ $t('dashboard.settings.integrations.feature.rsvpSync') }}
             </div>
             <div class="flex items-center gap-2 text-sm text-surface-600 dark:text-surface-400">
               <Clock class="size-4 text-emerald-500 shrink-0" />
-              Timezone-aware scheduling
+              {{ $t('dashboard.settings.integrations.feature.timezoneAware') }}
             </div>
           </div>
 
@@ -239,7 +241,7 @@ async function handleDisconnect() {
           <div class="flex items-center justify-between pt-2">
             <div class="flex items-center gap-1.5 text-xs text-surface-400 dark:text-surface-500">
               <Shield class="size-3.5" />
-              Tokens encrypted at rest
+              {{ $t('dashboard.settings.integrations.tokensEncrypted') }}
             </div>
 
             <div class="flex items-center gap-2">
@@ -249,24 +251,24 @@ async function handleDisconnect() {
                 @click="showDisconnectConfirm = true"
               >
                 <Unplug class="size-3.5" />
-                Disconnect
+                {{ $t('dashboard.settings.integrations.disconnect') }}
               </button>
 
               <template v-else>
-                <span class="text-sm text-surface-500 dark:text-surface-400">Are you sure?</span>
+                <span class="text-sm text-surface-500 dark:text-surface-400">{{ $t('dashboard.settings.integrations.areYouSure') }}</span>
                 <button
                   :disabled="isDisconnecting"
                   class="inline-flex items-center gap-1.5 rounded-lg bg-danger-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-danger-700 disabled:opacity-50 transition-colors"
                   @click="handleDisconnect"
                 >
                   <Loader2 v-if="isDisconnecting" class="size-3.5 animate-spin" />
-                  Yes, disconnect
+                  {{ $t('dashboard.settings.integrations.yesDisconnect') }}
                 </button>
                 <button
                   class="rounded-lg px-3 py-1.5 text-sm font-medium text-surface-600 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
                   @click="showDisconnectConfirm = false"
                 >
-                  Cancel
+                  {{ $t('common.cancel') }}
                 </button>
               </template>
             </div>
@@ -277,28 +279,26 @@ async function handleDisconnect() {
         <div v-else class="space-y-4">
           <div class="space-y-3">
             <p class="text-sm text-surface-600 dark:text-surface-400">
-              Connect your Google Calendar to automatically sync interview schedules.
-              Both you and the candidate will see the event in your calendars, with
-              two-way RSVP tracking.
+              {{ $t('dashboard.settings.integrations.connectDescription') }}
             </p>
 
             <!-- Features preview -->
             <div class="rounded-lg bg-surface-50 dark:bg-surface-800/50 p-4 space-y-2">
               <div class="flex items-center gap-2 text-sm text-surface-600 dark:text-surface-400">
                 <Calendar class="size-4 text-brand-500 shrink-0" />
-                Auto-create calendar events for scheduled interviews
+                {{ $t('dashboard.settings.integrations.feature.autoCreateEvents') }}
               </div>
               <div class="flex items-center gap-2 text-sm text-surface-600 dark:text-surface-400">
                 <RefreshCw class="size-4 text-brand-500 shrink-0" />
-                Two-way sync — changes in either system stay in sync
+                {{ $t('dashboard.settings.integrations.feature.twoWaySyncDetail') }}
               </div>
               <div class="flex items-center gap-2 text-sm text-surface-600 dark:text-surface-400">
                 <Clock class="size-4 text-brand-500 shrink-0" />
-                Proper timezone handling — no more scheduling confusion
+                {{ $t('dashboard.settings.integrations.feature.properTimezone') }}
               </div>
               <div class="flex items-center gap-2 text-sm text-surface-600 dark:text-surface-400">
                 <Shield class="size-4 text-brand-500 shrink-0" />
-                OAuth tokens encrypted at rest — revoke anytime
+                {{ $t('dashboard.settings.integrations.feature.oauthEncrypted') }}
               </div>
             </div>
           </div>
@@ -308,7 +308,7 @@ async function handleDisconnect() {
             @click="connect"
           >
             <Calendar class="size-4" />
-            Connect Google Calendar
+            {{ $t('dashboard.settings.integrations.connectGoogleCalendar') }}
           </button>
         </div>
       </div>

@@ -1,12 +1,14 @@
 <script setup lang="ts">
+const { t } = useI18n();
+
 definePageMeta({
     layout: "auth",
     middleware: ["guest"],
 });
 
 useSeoMeta({
-    title: "Forgot Password — Matriq",
-    description: "Reset your Matriq account password",
+    title: t("auth.forgotPassword.pageTitle"),
+    description: t("auth.forgotPassword.pageDescription"),
     robots: "noindex, nofollow",
 });
 
@@ -23,7 +25,7 @@ async function handleRequestReset() {
     error.value = "";
 
     if (!email.value) {
-        error.value = "Email is required.";
+        error.value = t("auth.forgotPassword.emailRequired");
         return;
     }
 
@@ -37,13 +39,13 @@ async function handleRequestReset() {
 
         if (result.error) {
             error.value =
-                result.error.message ?? "Failed to send reset email. Please try again.";
+                result.error.message ?? t("auth.forgotPassword.sendFailedDefault");
             isLoading.value = false;
             return;
         }
     } catch (e: unknown) {
         error.value =
-            e instanceof Error ? e.message : "Failed to send reset email. Please try again.";
+            e instanceof Error ? e.message : t("auth.forgotPassword.sendFailedDefault");
         isLoading.value = false;
         return;
     }
@@ -61,15 +63,14 @@ async function handleRequestReset() {
         <h2
             class="text-xl font-semibold text-center text-surface-900 dark:text-surface-100 mb-2"
         >
-            Reset your password
+            {{ $t('auth.forgotPassword.heading') }}
         </h2>
 
         <template v-if="success">
             <div
                 class="rounded-md border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950 p-3 text-sm text-green-700 dark:text-green-400"
             >
-                If an account with that email exists, we've sent a password reset link.
-                Please check your inbox and spam folder.
+                {{ $t('auth.forgotPassword.successMessage') }}
             </div>
 
             <p class="text-center text-sm text-surface-500 dark:text-surface-400 mt-2">
@@ -77,14 +78,14 @@ async function handleRequestReset() {
                     :to="$localePath('/auth/sign-in')"
                     class="text-brand-600 dark:text-brand-400 hover:underline"
                 >
-                    Back to sign in
+                    {{ $t('auth.forgotPassword.backToSignIn') }}
                 </NuxtLink>
             </p>
         </template>
 
         <template v-else>
             <p class="text-sm text-surface-500 dark:text-surface-400 text-center">
-                Enter your email address and we'll send you a link to reset your password.
+                {{ $t('auth.forgotPassword.instructions') }}
             </p>
 
             <div
@@ -98,7 +99,7 @@ async function handleRequestReset() {
                 <label
                     class="flex flex-col gap-1 text-sm font-medium text-surface-700 dark:text-surface-300"
                 >
-                    <span>Email</span>
+                    <span>{{ $t('auth.forgotPassword.emailLabel') }}</span>
                     <input
                         v-model="email"
                         type="email"
@@ -113,17 +114,17 @@ async function handleRequestReset() {
                     :disabled="isLoading"
                     class="mt-2 px-4 py-2.5 bg-brand-600 text-white rounded-md text-sm font-medium cursor-pointer hover:bg-brand-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
                 >
-                    {{ isLoading ? "Sending…" : "Send reset link" }}
+                    {{ isLoading ? $t('auth.forgotPassword.sending') : $t('auth.forgotPassword.submitButton') }}
                 </button>
             </form>
 
             <p class="text-center text-sm text-surface-500 dark:text-surface-400">
-                Remember your password?
+                {{ $t('auth.forgotPassword.rememberPassword') }}
                 <NuxtLink
                     :to="$localePath('/auth/sign-in')"
                     class="text-brand-600 dark:text-brand-400 hover:underline"
                 >
-                    Sign in
+                    {{ $t('auth.forgotPassword.signInLink') }}
                 </NuxtLink>
             </p>
         </template>

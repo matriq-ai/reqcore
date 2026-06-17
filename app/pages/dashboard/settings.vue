@@ -5,6 +5,8 @@ definePageMeta({
   layout: 'settings',
   middleware: ['auth', 'require-org'],
 })
+
+const { t } = useI18n()
 </script>
 
 <template>
@@ -16,16 +18,16 @@ definePageMeta({
         <div class="rounded-xl border border-danger-200 dark:border-danger-900 bg-danger-50/50 dark:bg-danger-950/30 p-6">
           <div class="flex items-center gap-3 mb-3">
             <AlertTriangle class="size-5 text-danger-500" />
-            <h2 class="text-base font-semibold text-danger-700 dark:text-danger-300">Something went wrong</h2>
+            <h2 class="text-base font-semibold text-danger-700 dark:text-danger-300">{{ $t('dashboard.settings.errorBoundary.title') }}</h2>
           </div>
           <p class="text-sm text-surface-600 dark:text-surface-400 mb-4">
-            {{ error?.message || 'An unexpected error occurred while loading this page.' }}
+            {{ error?.message || t('dashboard.settings.errorBoundary.defaultMessage') }}
           </p>
           <button
             class="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 transition-colors"
             @click="clearError"
           >
-            Try again
+            {{ $t('dashboard.settings.errorBoundary.tryAgain') }}
           </button>
         </div>
       </div>

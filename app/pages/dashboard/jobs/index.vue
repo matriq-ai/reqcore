@@ -10,9 +10,11 @@ definePageMeta({
   middleware: ['auth', 'require-org'],
 })
 
+const { t } = useI18n()
+
 useSeoMeta({
   title: 'My Jobs — Matriq',
-  description: 'Your active job postings',
+  description: () => t('dashboard.jobs.list.seoDescription'),
 })
 
 const { activeOrg } = useCurrentOrg()
@@ -22,14 +24,14 @@ const localePath = useLocalePath()
 // Stage config for clickable pipeline counts
 // ─────────────────────────────────────────────
 
-const stageConfig = [
-  { key: 'new', label: 'New', textColor: 'text-blue-600 dark:text-blue-400', bgColor: 'bg-blue-50 dark:bg-blue-950/40' },
-  { key: 'screening', label: 'Screening', textColor: 'text-violet-600 dark:text-violet-400', bgColor: 'bg-violet-50 dark:bg-violet-950/40' },
-  { key: 'interview', label: 'Interview', textColor: 'text-amber-600 dark:text-amber-400', bgColor: 'bg-amber-50 dark:bg-amber-950/40' },
-  { key: 'offer', label: 'Offer', textColor: 'text-teal-600 dark:text-teal-400', bgColor: 'bg-teal-50 dark:bg-teal-950/40' },
-  { key: 'hired', label: 'Hired', textColor: 'text-green-600 dark:text-green-400', bgColor: 'bg-green-50 dark:bg-green-950/40' },
-  { key: 'rejected', label: 'Rejected', textColor: 'text-surface-500 dark:text-surface-400', bgColor: 'bg-surface-100 dark:bg-surface-800' },
-] as const
+const stageConfig = computed(() => [
+  { key: 'new', label: t('dashboard.home.stages.new'), textColor: 'text-blue-600 dark:text-blue-400', bgColor: 'bg-blue-50 dark:bg-blue-950/40' },
+  { key: 'screening', label: t('dashboard.home.stages.screening'), textColor: 'text-violet-600 dark:text-violet-400', bgColor: 'bg-violet-50 dark:bg-violet-950/40' },
+  { key: 'interview', label: t('dashboard.home.stages.interview'), textColor: 'text-amber-600 dark:text-amber-400', bgColor: 'bg-amber-50 dark:bg-amber-950/40' },
+  { key: 'offer', label: t('dashboard.home.stages.offer'), textColor: 'text-teal-600 dark:text-teal-400', bgColor: 'bg-teal-50 dark:bg-teal-950/40' },
+  { key: 'hired', label: t('dashboard.home.stages.hired'), textColor: 'text-green-600 dark:text-green-400', bgColor: 'bg-green-50 dark:bg-green-950/40' },
+  { key: 'rejected', label: t('dashboard.home.stages.rejected'), textColor: 'text-surface-500 dark:text-surface-400', bgColor: 'bg-surface-100 dark:bg-surface-800' },
+])
 
 function getStageCount(pipeline: any, key: string): number {
   return pipeline?.[key] ?? 0
@@ -52,12 +54,12 @@ const statusBadgeClasses: Record<string, string> = {
   archived: 'bg-surface-100 text-surface-400 dark:bg-surface-800 dark:text-surface-500',
 }
 
-const typeLabels: Record<string, string> = {
-  full_time: 'Full-time',
-  part_time: 'Part-time',
-  contract: 'Contract',
-  internship: 'Internship',
-}
+const typeLabels = computed<Record<string, string>>(() => ({
+  full_time: t('dashboard.jobs.list.types.fullTime'),
+  part_time: t('dashboard.jobs.list.types.partTime'),
+  contract: t('dashboard.jobs.list.types.contract'),
+  internship: t('dashboard.jobs.list.types.internship'),
+}))
 
 // ─────────────────────────────────────────────
 // View mode (gallery | table)
@@ -82,29 +84,29 @@ const typeFilter = ref<TypeFilter[]>([])
 const experienceFilter = ref<ExperienceFilter[]>([])
 const remoteFilter = ref<RemoteFilter[]>([])
 
-const statusOptions: { value: StatusFilter, label: string }[] = [
-  { value: 'open', label: 'Open' },
-  { value: 'draft', label: 'Draft' },
-  { value: 'closed', label: 'Closed' },
-  { value: 'archived', label: 'Archived' },
-]
-const typeOptions: { value: TypeFilter, label: string }[] = [
-  { value: 'full_time', label: 'Full-time' },
-  { value: 'part_time', label: 'Part-time' },
-  { value: 'contract', label: 'Contract' },
-  { value: 'internship', label: 'Internship' },
-]
-const experienceOptions: { value: ExperienceFilter, label: string }[] = [
-  { value: 'junior', label: 'Junior' },
-  { value: 'mid', label: 'Mid' },
-  { value: 'senior', label: 'Senior' },
-  { value: 'lead', label: 'Lead' },
-]
-const remoteOptions: { value: RemoteFilter, label: string }[] = [
-  { value: 'remote', label: 'Remote' },
-  { value: 'hybrid', label: 'Hybrid' },
-  { value: 'onsite', label: 'On-site' },
-]
+const statusOptions = computed<{ value: StatusFilter, label: string }[]>(() => [
+  { value: 'open', label: t('dashboard.jobs.list.status.open') },
+  { value: 'draft', label: t('dashboard.jobs.list.status.draft') },
+  { value: 'closed', label: t('dashboard.jobs.list.status.closed') },
+  { value: 'archived', label: t('dashboard.jobs.list.status.archived') },
+])
+const typeOptions = computed<{ value: TypeFilter, label: string }[]>(() => [
+  { value: 'full_time', label: t('dashboard.jobs.list.types.fullTime') },
+  { value: 'part_time', label: t('dashboard.jobs.list.types.partTime') },
+  { value: 'contract', label: t('dashboard.jobs.list.types.contract') },
+  { value: 'internship', label: t('dashboard.jobs.list.types.internship') },
+])
+const experienceOptions = computed<{ value: ExperienceFilter, label: string }[]>(() => [
+  { value: 'junior', label: t('dashboard.jobs.list.experience.junior') },
+  { value: 'mid', label: t('dashboard.jobs.list.experience.mid') },
+  { value: 'senior', label: t('dashboard.jobs.list.experience.senior') },
+  { value: 'lead', label: t('dashboard.jobs.list.experience.lead') },
+])
+const remoteOptions = computed<{ value: RemoteFilter, label: string }[]>(() => [
+  { value: 'remote', label: t('dashboard.jobs.list.remote.remote') },
+  { value: 'hybrid', label: t('dashboard.jobs.list.remote.hybrid') },
+  { value: 'onsite', label: t('dashboard.jobs.list.remote.onsite') },
+])
 
 function toggleIn<T>(arr: T[], value: T): T[] {
   return arr.includes(value) ? arr.filter(v => v !== value) : [...arr, value]
@@ -344,7 +346,7 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
     <!-- ─── Header ─── -->
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-50">My Jobs</h1>
+        <h1 class="text-2xl font-bold text-surface-900 dark:text-surface-50">{{ $t('dashboard.jobs.list.title') }}</h1>
         <p v-if="activeOrg" class="text-sm text-surface-500 dark:text-surface-400 mt-1">
           {{ activeOrg.name }}
         </p>
@@ -354,7 +356,7 @@ const noResults = computed(() => !isEmpty.value && filteredJobs.value.length ===
         class="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 transition-colors no-underline"
       >
         <Plus class="size-4" />
-        New Job
+        {{ $t('dashboard.home.newJob') }}
       </NuxtLink>
     </div>
 

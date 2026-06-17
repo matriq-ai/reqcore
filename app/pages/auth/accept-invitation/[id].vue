@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { Building2, UserPlus, Loader2, AlertTriangle, Check } from 'lucide-vue-next'
 
+const { t } = useI18n()
+
 definePageMeta({
   layout: 'auth',
 })
 
 useSeoMeta({
-  title: 'Accept Invitation — Matriq',
-  description: 'Accept an organization invitation on Matriq',
+  title: t('auth.acceptInvitation.pageTitle'),
+  description: t('auth.acceptInvitation.pageDescription'),
   robots: 'noindex, nofollow',
 })
 
@@ -43,7 +45,7 @@ async function handleAccept() {
     })
 
     if (result.error) {
-      error.value = result.error.message ?? 'Failed to accept invitation.'
+      error.value = result.error.message ?? t('auth.acceptInvitation.acceptFailedDefault')
       isAccepting.value = false
       return
     }
@@ -63,7 +65,7 @@ async function handleAccept() {
     }, 1500)
   }
   catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Failed to accept invitation'
+    const message = err instanceof Error ? err.message : t('auth.acceptInvitation.acceptFailedCatch')
     error.value = message
   }
   finally {
@@ -86,9 +88,9 @@ onMounted(() => {
       <Check class="size-6" />
     </div>
     <div class="text-center">
-      <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-1">You're in!</h2>
+      <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-1">{{ $t('auth.acceptInvitation.successHeading') }}</h2>
       <p class="text-sm text-surface-500 dark:text-surface-400">
-        Invitation accepted. Redirecting to dashboard…
+        {{ $t('auth.acceptInvitation.successMessage') }}
       </p>
     </div>
   </div>
@@ -96,7 +98,7 @@ onMounted(() => {
   <!-- Accepting state (auto-accept in progress) -->
   <div v-else-if="isAccepting" class="flex flex-col items-center gap-3 py-8">
     <div class="size-6 animate-spin rounded-full border-2 border-brand-600 border-t-transparent" />
-    <p class="text-sm text-surface-500 dark:text-surface-400">Accepting invitation…</p>
+    <p class="text-sm text-surface-500 dark:text-surface-400">{{ $t('auth.acceptInvitation.accepting') }}</p>
   </div>
 
   <!-- Error state -->
@@ -105,7 +107,7 @@ onMounted(() => {
       <AlertTriangle class="size-6" />
     </div>
     <div class="text-center">
-      <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-1">Invitation error</h2>
+      <h2 class="text-lg font-semibold text-surface-900 dark:text-surface-100 mb-1">{{ $t('auth.acceptInvitation.errorHeading') }}</h2>
       <p class="text-sm text-surface-500 dark:text-surface-400">{{ error }}</p>
     </div>
     <div class="flex gap-3">
@@ -113,13 +115,13 @@ onMounted(() => {
         class="text-sm text-brand-600 dark:text-brand-400 hover:underline"
         @click="handleAccept"
       >
-        Try again
+        {{ $t('auth.acceptInvitation.tryAgain') }}
       </button>
       <NuxtLink
         :to="localePath('/auth/sign-in')"
         class="text-sm text-surface-500 dark:text-surface-400 hover:underline no-underline"
       >
-        Go to sign in
+        {{ $t('auth.acceptInvitation.goToSignIn') }}
       </NuxtLink>
     </div>
   </div>
@@ -130,14 +132,14 @@ onMounted(() => {
       <div class="flex items-center justify-center size-12 rounded-full bg-brand-100 dark:bg-brand-950 text-brand-600 dark:text-brand-400 mx-auto mb-4">
         <Building2 class="size-6" />
       </div>
-      <h2 class="text-xl font-semibold text-surface-900 dark:text-surface-100 mb-1">Accept invitation</h2>
+      <h2 class="text-xl font-semibold text-surface-900 dark:text-surface-100 mb-1">{{ $t('auth.acceptInvitation.heading') }}</h2>
       <p class="text-sm text-surface-500 dark:text-surface-400">
-        You've been invited to join an organization on Matriq.
+        {{ $t('auth.acceptInvitation.subheading') }}
       </p>
     </div>
 
     <p class="text-sm text-surface-600 dark:text-surface-400 text-center">
-      Sign in or create an account to accept this invitation.
+      {{ $t('auth.acceptInvitation.prompt') }}
     </p>
 
     <div class="flex gap-3">
@@ -145,13 +147,13 @@ onMounted(() => {
         :to="localePath({ path: '/auth/sign-in', query: { invitation: invitationId } })"
         class="flex-1 text-center px-4 py-2.5 bg-brand-600 text-white rounded-md text-sm font-medium hover:bg-brand-700 transition-colors no-underline"
       >
-        Sign in
+        {{ $t('auth.acceptInvitation.signIn') }}
       </NuxtLink>
       <NuxtLink
         :to="localePath({ path: '/auth/sign-up', query: { invitation: invitationId } })"
         class="flex-1 text-center px-4 py-2.5 border border-surface-300 dark:border-surface-700 text-surface-700 dark:text-surface-300 rounded-md text-sm font-medium hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors no-underline"
       >
-        Create account
+        {{ $t('auth.acceptInvitation.createAccount') }}
       </NuxtLink>
     </div>
   </div>

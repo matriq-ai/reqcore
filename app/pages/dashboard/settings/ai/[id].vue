@@ -8,9 +8,11 @@ import { Loader2, AlertTriangle } from 'lucide-vue-next'
 
 definePageMeta({})
 
+const { t } = useI18n()
+
 useSeoMeta({
   title: 'Edit AI model — Matriq',
-  description: 'Update an existing AI provider configuration.',
+  description: t('dashboard.settings.ai.editPage.seoDescription'),
 })
 
 interface AiConfigRow {
@@ -83,8 +85,8 @@ function onCancel() {
     >
       <AlertTriangle class="size-5 shrink-0 mt-0.5" />
       <div>
-        <p class="font-semibold mb-1">Insufficient permissions</p>
-        <p>You don't have permission to manage AI settings.</p>
+        <p class="font-semibold mb-1">{{ $t('dashboard.settings.ai.insufficientPermissions') }}</p>
+        <p>{{ $t('dashboard.settings.ai.editPage.insufficientPermissionsDescription') }}</p>
       </div>
     </div>
 
@@ -98,13 +100,13 @@ function onCancel() {
     >
       <AlertTriangle class="size-5 shrink-0 mt-0.5" />
       <div>
-        <p class="font-semibold mb-1">Configuration not found</p>
-        <p class="mb-3">This AI configuration no longer exists or you don't have access to it.</p>
+        <p class="font-semibold mb-1">{{ $t('dashboard.settings.ai.editPage.configNotFoundTitle') }}</p>
+        <p class="mb-3">{{ $t('dashboard.settings.ai.editPage.configNotFoundDescription') }}</p>
         <NuxtLink
           to="/dashboard/settings/ai"
           class="inline-flex items-center gap-1.5 rounded-lg bg-danger-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-danger-700 transition-colors"
         >
-          Back to AI configuration
+          {{ $t('dashboard.settings.ai.editPage.backToAiConfig') }}
         </NuxtLink>
       </div>
     </div>

@@ -5,7 +5,7 @@ import {
   Sun, Moon, MessageSquarePlus, Settings,
   ChevronDown, Menu, X, Users, ChevronLeft,
   LayoutDashboard, Calendar, ArrowUpCircle,
-  Cloud, Server, Sparkles, Radio, History,
+  Cloud, Sparkles, Radio, History,
   MessageCircle, MoreHorizontal,
 } from 'lucide-vue-next'
 
@@ -334,20 +334,6 @@ onUnmounted(() => {
                       <div class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">Start free in seconds — we handle hosting, updates &amp; backups</div>
                     </div>
                   </NuxtLink>
-                  <a
-                    href="https://github.com/matriq-inc/matriq#quick-start"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="flex items-start gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-surface-50 dark:hover:bg-surface-800/60 no-underline group/item"
-                  >
-                    <div class="flex items-center justify-center size-8 rounded-lg bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400 shrink-0 mt-0.5">
-                      <Server class="size-4" />
-                    </div>
-                    <div>
-                      <div class="text-sm font-semibold text-surface-900 dark:text-surface-100 group-hover/item:text-surface-700 dark:group-hover/item:text-surface-200 transition-colors">Self-Host</div>
-                      <div class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">Deploy on your own infrastructure — full control, 100% free</div>
-                    </div>
-                  </a>
                 </div>
               </div>
             </Transition>
@@ -628,15 +614,6 @@ onUnmounted(() => {
                 <Cloud class="size-4" />
                 Cloud Hosted — Start Free
               </NuxtLink>
-              <a
-                href="https://github.com/matriq-inc/matriq#quick-start"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-surface-600 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors no-underline mt-1"
-              >
-                <Server class="size-4" />
-                Self-Host — Deploy Free
-              </a>
             </div>
           </template>
         </nav>

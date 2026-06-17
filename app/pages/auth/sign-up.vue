@@ -1,12 +1,14 @@
 <script setup lang="ts">
+const { t } = useI18n();
+
 definePageMeta({
     layout: "auth",
     middleware: ["guest"],
 });
 
 useSeoMeta({
-    title: "Sign Up — Matriq",
-    description: "Create your Matriq account",
+    title: t("auth.signUp.pageTitle"),
+    description: t("auth.signUp.pageDescription"),
     robots: "noindex, nofollow",
 });
 
@@ -45,17 +47,17 @@ async function handleSignUp() {
     error.value = "";
 
     if (!name.value || !email.value || !password.value) {
-        error.value = "All fields are required.";
+        error.value = t("auth.signUp.allFieldsRequired");
         return;
     }
 
     if (password.value.length < 8) {
-        error.value = "Password must be at least 8 characters.";
+        error.value = t("auth.signUp.passwordMinLength");
         return;
     }
 
     if (password.value !== confirmPassword.value) {
-        error.value = "Passwords do not match.";
+        error.value = t("auth.signUp.passwordsDoNotMatch");
         return;
     }
 
@@ -74,10 +76,10 @@ async function handleSignUp() {
             error.value =
                 result.error.message && result.error.message !== "Server Error"
                     ? result.error.message
-                    : 'Sign-up failed due to a server error. If you are self-hosting, make sure the BETTER_AUTH_URL environment variable is set to your deployment domain (e.g. "https://your-app.up.railway.app") and redeploy.';
+                    : t("auth.signUp.serverErrorDefault");
         } else {
             error.value =
-                result.error.message ?? "Sign-up failed. Please try again.";
+                result.error.message ?? t("auth.signUp.signUpFailedDefault");
         }
         track("signup_failed", { error_type: result.error.code ?? "unknown" });
         isLoading.value = false;
@@ -113,7 +115,7 @@ async function handleSsoSignUp() {
         error.value =
             e instanceof Error
                 ? e.message
-                : "SSO sign-up failed. Please try again.";
+                : t("auth.signUp.ssoSignUpFailedDefault");
         isLoading.value = false;
     }
 }
@@ -138,7 +140,7 @@ async function handleSocialSignUp(providerId: string) {
         error.value =
             e instanceof Error
                 ? e.message
-                : "Social sign-up failed. Please try again.";
+                : t("auth.signUp.socialSignUpFailedDefault");
         socialLoading.value = null;
     }
 }
@@ -149,7 +151,7 @@ async function handleSocialSignUp(providerId: string) {
         <h2
             class="text-xl font-semibold text-center text-surface-900 dark:text-surface-100 mb-2"
         >
-            Create your account
+            {{ $t('auth.signUp.heading') }}
         </h2>
 
         <div
@@ -172,7 +174,7 @@ async function handleSocialSignUp(providerId: string) {
                 >
                     <template v-if="socialLoading === provider.id">
                         <svg class="animate-spin size-4 text-surface-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" /><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" /></svg>
-                        Redirecting…
+                        {{ $t('auth.signUp.redirecting') }}
                     </template>
                     <template v-else>
                         <!-- Google icon -->
@@ -193,7 +195,7 @@ async function handleSocialSignUp(providerId: string) {
                             <rect x="1" y="12" width="10" height="10" fill="#00A4EF"/>
                             <rect x="12" y="12" width="10" height="10" fill="#FFB900"/>
                         </svg>
-                        Continue with {{ provider.name }}
+                        {{ $t('auth.signUp.continueWithProvider', { provider: provider.name }) }}
                     </template>
                 </button>
             </div>
@@ -203,7 +205,7 @@ async function handleSocialSignUp(providerId: string) {
                     <div class="w-full border-t border-surface-200 dark:border-surface-700" />
                 </div>
                 <div class="relative flex justify-center text-xs">
-                    <span class="bg-white dark:bg-surface-900 px-2 text-surface-400">or continue with email</span>
+                    <span class="bg-white dark:bg-surface-900 px-2 text-surface-400">{{ $t('auth.signUp.orContinueWithEmail') }}</span>
                 </div>
             </div>
         </template>
@@ -216,10 +218,10 @@ async function handleSocialSignUp(providerId: string) {
                 class="px-4 py-2.5 bg-surface-800 dark:bg-surface-200 text-white dark:text-surface-900 rounded-md text-sm font-medium cursor-pointer hover:bg-surface-900 dark:hover:bg-surface-300 disabled:opacity-60 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
                 @click="handleSsoSignUp"
             >
-                <template v-if="isLoading">Redirecting…</template>
+                <template v-if="isLoading">{{ $t('auth.signUp.redirecting') }}</template>
                 <template v-else>
-                    Sign up with {{ oidcProviderName }}
-                    <span class="inline-flex items-center rounded-full bg-amber-400/20 px-1.5 py-0.5 text-[10px] font-medium text-amber-200">Beta</span>
+                    {{ $t('auth.signUp.signUpWithProvider', { provider: oidcProviderName }) }}
+                    <span class="inline-flex items-center rounded-full bg-amber-400/20 px-1.5 py-0.5 text-[10px] font-medium text-amber-200">{{ $t('auth.signUp.beta') }}</span>
                 </template>
             </button>
 
@@ -232,7 +234,7 @@ async function handleSocialSignUp(providerId: string) {
                 <div class="relative flex justify-center text-xs">
                     <span
                         class="bg-white dark:bg-surface-900 px-2 text-surface-400"
-                        >or continue with email</span
+                        >{{ $t('auth.signUp.orContinueWithEmail') }}</span
                     >
                 </div>
             </div>
@@ -241,7 +243,7 @@ async function handleSocialSignUp(providerId: string) {
         <label
             class="flex flex-col gap-1 text-sm font-medium text-surface-700 dark:text-surface-300"
         >
-            <span>Name</span>
+            <span>{{ $t('auth.signUp.nameLabel') }}</span>
             <input
                 v-model="name"
                 type="text"
@@ -254,7 +256,7 @@ async function handleSocialSignUp(providerId: string) {
         <label
             class="flex flex-col gap-1 text-sm font-medium text-surface-700 dark:text-surface-300"
         >
-            <span>Email</span>
+            <span>{{ $t('auth.signUp.emailLabel') }}</span>
             <input
                 v-model="email"
                 type="email"
@@ -267,7 +269,7 @@ async function handleSocialSignUp(providerId: string) {
         <label
             class="flex flex-col gap-1 text-sm font-medium text-surface-700 dark:text-surface-300"
         >
-            <span>Password</span>
+            <span>{{ $t('auth.signUp.passwordLabel') }}</span>
             <input
                 v-model="password"
                 type="password"
@@ -281,7 +283,7 @@ async function handleSocialSignUp(providerId: string) {
         <label
             class="flex flex-col gap-1 text-sm font-medium text-surface-700 dark:text-surface-300"
         >
-            <span>Confirm password</span>
+            <span>{{ $t('auth.signUp.confirmPasswordLabel') }}</span>
             <input
                 v-model="confirmPassword"
                 type="password"
@@ -296,11 +298,11 @@ async function handleSocialSignUp(providerId: string) {
             :disabled="isLoading"
             class="mt-2 px-4 py-2.5 bg-brand-600 text-white rounded-md text-sm font-medium cursor-pointer hover:bg-brand-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
         >
-            {{ isLoading ? "Creating account…" : "Sign up" }}
+            {{ isLoading ? $t('auth.signUp.creatingAccount') : $t('auth.signUp.submitButton') }}
         </button>
 
         <p class="text-center text-sm text-surface-500 dark:text-surface-400">
-            Already have an account?
+            {{ $t('auth.signUp.alreadyHaveAccount') }}
             <NuxtLink
                 :to="
                     pendingInvitation
@@ -311,7 +313,7 @@ async function handleSocialSignUp(providerId: string) {
                         : $localePath('/auth/sign-in')
                 "
                 class="text-brand-600 dark:text-brand-400 hover:underline"
-                >Sign in</NuxtLink
+                >{{ $t('auth.signUp.signInLink') }}</NuxtLink
             >
         </p>
     </form>

@@ -12,8 +12,6 @@ export interface Toast {
   duration?: number
 }
 
-const GITHUB_ISSUES_URL = 'https://github.com/matriq-inc/matriq/issues/new'
-
 function getPostHog(): PostHog | undefined {
   try {
     const $ph = (useNuxtApp() as Record<string, unknown>).$posthog as (() => PostHog) | undefined
@@ -71,10 +69,6 @@ export function useToast() {
       title,
       message: opts?.message,
       details: opts?.details,
-      link: {
-        label: 'Report issue',
-        href: GITHUB_ISSUES_URL,
-      },
     })
   }
 

@@ -6,9 +6,11 @@ import {
 
 definePageMeta({})
 
+const { t } = useI18n()
+
 useSeoMeta({
   title: 'Single Sign-On — Matriq',
-  description: 'Configure enterprise SSO for your organization',
+  description: t('dashboard.settings.sso.seoDescription'),
 })
 
 const { allowed: canManageSso } = usePermission({ organization: ['update'] })
@@ -96,13 +98,13 @@ async function handleRegister() {
     })
 
     track('sso_provider_registered')
-    formSuccess.value = 'SSO provider registered successfully. Your team can now sign in with their corporate credentials.'
+    formSuccess.value = t('dashboard.settings.sso.registerSuccess')
     resetForm()
     showForm.value = false
     await refreshProviders()
   } catch (err: unknown) {
     const fetchErr = err as { data?: { statusMessage?: string }; message?: string }
-    formError.value = fetchErr.data?.statusMessage ?? fetchErr.message ?? 'Failed to register SSO provider'
+    formError.value = fetchErr.data?.statusMessage ?? fetchErr.message ?? t('dashboard.settings.sso.registerFailed')
   } finally {
     isRegistering.value = false
   }
@@ -121,12 +123,12 @@ async function handleDelete(id: string) {
   try {
     await $fetch(`/api/sso/providers/${id}`, { method: 'DELETE' })
     track('sso_provider_deleted')
-    formSuccess.value = 'SSO provider removed.'
+    formSuccess.value = t('dashboard.settings.sso.removeSuccess')
     confirmDeleteId.value = null
     await refreshProviders()
   } catch (err: unknown) {
     const fetchErr = err as { data?: { statusMessage?: string }; message?: string }
-    formError.value = fetchErr.data?.statusMessage ?? fetchErr.message ?? 'Failed to remove SSO provider'
+    formError.value = fetchErr.data?.statusMessage ?? fetchErr.message ?? t('dashboard.settings.sso.removeFailed')
   } finally {
     deletingId.value = null
   }
@@ -158,14 +160,14 @@ async function copyCallbackUrl(providerId: string) {
     <div class="mb-6">
       <div class="flex items-center gap-2">
         <h1 class="text-lg font-semibold text-surface-900 dark:text-surface-100">
-          Single Sign-On
+          {{ $t('dashboard.settings.sso.title') }}
         </h1>
         <span class="inline-flex items-center rounded-full bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 text-xs font-medium text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
-          Beta
+          {{ $t('dashboard.settings.sso.beta') }}
         </span>
       </div>
       <p class="mt-1 text-sm text-surface-500 dark:text-surface-400">
-        Allow your team to sign in with their corporate identity provider (Okta, Azure AD, Google Workspace, etc.).
+        {{ $t('dashboard.settings.sso.subtitle') }}
       </p>
     </div>
 
@@ -203,7 +205,7 @@ async function copyCallbackUrl(providerId: string) {
     <!-- Loading state -->
     <div v-if="fetchStatus === 'pending'" class="flex items-center gap-3 py-12 justify-center">
       <Loader2 class="size-5 animate-spin text-surface-400" />
-      <span class="text-sm text-surface-400">Loading SSO configuration…</span>
+      <span class="text-sm text-surface-400">{{ $t('dashboard.settings.sso.loadingConfiguration') }}</span>
     </div>
 
     <template v-else>
@@ -222,24 +224,24 @@ async function copyCallbackUrl(providerId: string) {
                   {{ provider.providerId }}
                 </h3>
                 <span class="inline-flex items-center rounded-full bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-400">
-                  Active
+                  {{ $t('dashboard.settings.sso.active') }}
                 </span>
               </div>
               <div class="space-y-1 text-xs text-surface-500 dark:text-surface-400">
                 <p class="flex items-center gap-1.5">
                   <Globe class="size-3" />
-                  <span>Domain: <span class="font-medium text-surface-700 dark:text-surface-300">{{ provider.domain }}</span></span>
+                  <span>{{ $t('dashboard.settings.sso.domainLabel') }} <span class="font-medium text-surface-700 dark:text-surface-300">{{ provider.domain }}</span></span>
                 </p>
                 <p class="flex items-center gap-1.5">
                   <KeyRound class="size-3" />
-                  <span>Issuer: <span class="font-mono text-surface-600 dark:text-surface-400">{{ provider.issuer }}</span></span>
+                  <span>{{ $t('dashboard.settings.sso.issuerLabel') }} <span class="font-mono text-surface-600 dark:text-surface-400">{{ provider.issuer }}</span></span>
                 </p>
               </div>
 
               <!-- Callback URL helper -->
               <div class="mt-3 rounded-md bg-surface-50 dark:bg-surface-800/50 px-3 py-2">
                 <p class="text-xs font-medium text-surface-600 dark:text-surface-300 mb-1">
-                  Redirect URI (add this in your IdP):
+                  {{ $t('dashboard.settings.sso.redirectUriLabel') }}
                 </p>
                 <div class="flex items-center gap-2">
                   <code class="text-xs font-mono text-surface-500 dark:text-surface-400 break-all flex-1">
@@ -247,7 +249,7 @@ async function copyCallbackUrl(providerId: string) {
                   </code>
                   <button
                     class="shrink-0 rounded p-1 text-surface-400 hover:text-surface-600 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors"
-                    title="Copy callback URL"
+                    :title="t('dashboard.settings.sso.copyCallbackUrl')"
                     @click="copyCallbackUrl(provider.providerId)"
                   >
                     <Check v-if="copiedProviderId === provider.providerId" class="size-3.5 text-emerald-500" />
@@ -267,20 +269,20 @@ async function copyCallbackUrl(providerId: string) {
                     @click="handleDelete(provider.id)"
                   >
                     <Loader2 v-if="deletingId === provider.id" class="size-3 animate-spin" />
-                    <span v-else>Confirm</span>
+                    <span v-else>{{ $t('dashboard.settings.sso.confirm') }}</span>
                   </button>
                   <button
                     class="rounded px-2 py-1 text-xs font-medium text-surface-500 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
                     @click="confirmDeleteId = null"
                   >
-                    Cancel
+                    {{ $t('common.cancel') }}
                   </button>
                 </div>
               </template>
               <button
                 v-else
                 class="rounded p-1.5 text-surface-400 hover:text-danger-500 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
-                title="Remove SSO provider"
+                :title="t('dashboard.settings.sso.removeProviderTitle')"
                 @click="confirmDeleteId = provider.id"
               >
                 <Trash2 class="size-4" />
@@ -297,10 +299,10 @@ async function copyCallbackUrl(providerId: string) {
       >
         <ShieldCheck class="size-10 text-surface-300 dark:text-surface-600 mx-auto mb-3" />
         <h3 class="text-sm font-semibold text-surface-700 dark:text-surface-300 mb-1">
-          No SSO provider configured
+          {{ $t('dashboard.settings.sso.emptyTitle') }}
         </h3>
         <p class="text-xs text-surface-500 dark:text-surface-400 mb-4 max-w-sm mx-auto">
-          Connect your corporate identity provider so your team can sign in with their work accounts — no separate passwords needed.
+          {{ $t('dashboard.settings.sso.emptyDescription') }}
         </p>
         <button
           v-if="canManageSso"
@@ -308,7 +310,7 @@ async function copyCallbackUrl(providerId: string) {
           @click="showForm = true"
         >
           <Plus class="size-4" />
-          Add SSO Provider
+          {{ $t('dashboard.settings.sso.addProvider') }}
         </button>
       </div>
 
@@ -319,7 +321,7 @@ async function copyCallbackUrl(providerId: string) {
           @click="showForm = true"
         >
           <Plus class="size-4" />
-          Add another provider
+          {{ $t('dashboard.settings.sso.addAnotherProvider') }}
         </button>
       </div>
 
@@ -327,13 +329,13 @@ async function copyCallbackUrl(providerId: string) {
       <Transition name="fade">
         <div v-if="showForm" class="rounded-lg border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 p-5">
           <h3 class="text-sm font-semibold text-surface-900 dark:text-surface-100 mb-4">
-            Register OIDC SSO Provider
+            {{ $t('dashboard.settings.sso.registerFormTitle') }}
           </h3>
 
           <form class="space-y-4" @submit.prevent="handleRegister">
             <!-- Domain -->
             <label class="flex flex-col gap-1 text-sm font-medium text-surface-700 dark:text-surface-300">
-              <span>Email domain <span class="text-danger-500">*</span></span>
+              <span>{{ $t('dashboard.settings.sso.emailDomainLabel') }} <span class="text-danger-500">*</span></span>
               <input
                 v-model="form.domain"
                 type="text"
@@ -341,12 +343,12 @@ async function copyCallbackUrl(providerId: string) {
                 required
                 class="px-3 py-2 border border-surface-300 dark:border-surface-700 rounded-md text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-800 outline-none transition-colors focus:border-brand-500 focus:ring-2 focus:ring-brand-500/15"
               />
-              <span class="text-xs text-surface-400">Users with this email domain will be routed to this SSO provider.</span>
+              <span class="text-xs text-surface-400">{{ $t('dashboard.settings.sso.emailDomainHint') }}</span>
             </label>
 
             <!-- Issuer URL -->
             <label class="flex flex-col gap-1 text-sm font-medium text-surface-700 dark:text-surface-300">
-              <span>Issuer URL <span class="text-danger-500">*</span></span>
+              <span>{{ $t('dashboard.settings.sso.issuerUrlLabel') }} <span class="text-danger-500">*</span></span>
               <input
                 v-model="form.issuer"
                 type="url"
@@ -355,14 +357,14 @@ async function copyCallbackUrl(providerId: string) {
                 class="px-3 py-2 border border-surface-300 dark:border-surface-700 rounded-md text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-800 outline-none transition-colors focus:border-brand-500 focus:ring-2 focus:ring-brand-500/15 font-mono text-xs"
               />
               <span class="text-xs text-surface-400">
-                The OIDC issuer URL. Matriq will auto-discover endpoints from
-                <code class="text-xs">/.well-known/openid-configuration</code>.
+                {{ $t('dashboard.settings.sso.issuerUrlHintPrefix') }}
+                <code class="text-xs">/.well-known/openid-configuration</code>{{ $t('dashboard.settings.sso.issuerUrlHintSuffix') }}
               </span>
             </label>
 
             <!-- Provider ID -->
             <label class="flex flex-col gap-1 text-sm font-medium text-surface-700 dark:text-surface-300">
-              <span>Provider ID <span class="text-danger-500">*</span></span>
+              <span>{{ $t('dashboard.settings.sso.providerIdLabel') }} <span class="text-danger-500">*</span></span>
               <input
                 v-model="form.providerId"
                 type="text"
@@ -371,16 +373,16 @@ async function copyCallbackUrl(providerId: string) {
                 pattern="^[a-z0-9-]+$"
                 class="px-3 py-2 border border-surface-300 dark:border-surface-700 rounded-md text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-800 outline-none transition-colors focus:border-brand-500 focus:ring-2 focus:ring-brand-500/15"
               />
-              <span class="text-xs text-surface-400">A unique slug for this provider. Lowercase letters, numbers, and hyphens only.</span>
+              <span class="text-xs text-surface-400">{{ $t('dashboard.settings.sso.providerIdHint') }}</span>
             </label>
 
             <!-- Client ID -->
             <label class="flex flex-col gap-1 text-sm font-medium text-surface-700 dark:text-surface-300">
-              <span>Client ID <span class="text-danger-500">*</span></span>
+              <span>{{ $t('dashboard.settings.sso.clientIdLabel') }} <span class="text-danger-500">*</span></span>
               <input
                 v-model="form.clientId"
                 type="text"
-                placeholder="Paste from your IdP"
+                :placeholder="t('dashboard.settings.sso.pasteFromIdpPlaceholder')"
                 required
                 autocomplete="off"
                 class="px-3 py-2 border border-surface-300 dark:border-surface-700 rounded-md text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-800 outline-none transition-colors focus:border-brand-500 focus:ring-2 focus:ring-brand-500/15 font-mono text-xs"
@@ -389,16 +391,16 @@ async function copyCallbackUrl(providerId: string) {
 
             <!-- Client Secret -->
             <label class="flex flex-col gap-1 text-sm font-medium text-surface-700 dark:text-surface-300">
-              <span>Client Secret <span class="text-danger-500">*</span></span>
+              <span>{{ $t('dashboard.settings.sso.clientSecretLabel') }} <span class="text-danger-500">*</span></span>
               <input
                 v-model="form.clientSecret"
                 type="password"
-                placeholder="Paste from your IdP"
+                :placeholder="t('dashboard.settings.sso.pasteFromIdpPlaceholder')"
                 required
                 autocomplete="off"
                 class="px-3 py-2 border border-surface-300 dark:border-surface-700 rounded-md text-sm text-surface-900 dark:text-surface-100 bg-white dark:bg-surface-800 outline-none transition-colors focus:border-brand-500 focus:ring-2 focus:ring-brand-500/15"
               />
-              <span class="text-xs text-surface-400">Stored encrypted. Never exposed in the UI after saving.</span>
+              <span class="text-xs text-surface-400">{{ $t('dashboard.settings.sso.clientSecretHint') }}</span>
             </label>
 
             <!-- Actions -->
@@ -410,14 +412,14 @@ async function copyCallbackUrl(providerId: string) {
               >
                 <Loader2 v-if="isRegistering" class="size-4 animate-spin" />
                 <ShieldCheck v-else class="size-4" />
-                {{ isRegistering ? 'Verifying & registering…' : 'Register SSO Provider' }}
+                {{ isRegistering ? $t('dashboard.settings.sso.verifyingAndRegistering') : $t('dashboard.settings.sso.registerProvider') }}
               </button>
               <button
                 type="button"
                 class="rounded-lg px-4 py-2 text-sm font-medium text-surface-600 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
                 @click="showForm = false; resetForm()"
               >
-                Cancel
+                {{ $t('common.cancel') }}
               </button>
             </div>
           </form>
@@ -425,13 +427,13 @@ async function copyCallbackUrl(providerId: string) {
           <!-- Setup guide -->
           <div class="mt-6 border-t border-surface-100 dark:border-surface-800 pt-4">
             <h4 class="text-xs font-semibold text-surface-600 dark:text-surface-400 uppercase tracking-wider mb-2">
-              Quick setup guide
+              {{ $t('dashboard.settings.sso.quickSetupGuide') }}
             </h4>
             <ol class="text-xs text-surface-500 dark:text-surface-400 space-y-1.5 list-decimal list-inside">
-              <li>Create an OIDC application in your identity provider (Okta, Azure AD, Google Workspace, etc.).</li>
-              <li>Set the <strong>Redirect URI</strong> to: <code class="bg-surface-100 dark:bg-surface-800 px-1 py-0.5 rounded text-xs">{{ `${siteOrigin}/api/auth/sso/callback/{provider-id}` }}</code></li>
-              <li>Copy the <strong>Client ID</strong> and <strong>Client Secret</strong> from your IdP and paste them above.</li>
-              <li>Enter the <strong>Issuer URL</strong> — Matriq will auto-discover all OIDC endpoints.</li>
+              <li>{{ $t('dashboard.settings.sso.setupStep1') }}</li>
+              <li>{{ $t('dashboard.settings.sso.setupStep2') }} <code class="bg-surface-100 dark:bg-surface-800 px-1 py-0.5 rounded text-xs">{{ `${siteOrigin}/api/auth/sso/callback/{provider-id}` }}</code></li>
+              <li>{{ $t('dashboard.settings.sso.setupStep3') }}</li>
+              <li>{{ $t('dashboard.settings.sso.setupStep4') }}</li>
             </ol>
 
             <div class="mt-3 flex flex-wrap gap-2">
@@ -441,7 +443,7 @@ async function copyCallbackUrl(providerId: string) {
                 rel="noopener noreferrer"
                 class="inline-flex items-center gap-1 text-xs text-brand-600 dark:text-brand-400 hover:underline"
               >
-                Okta guide <ExternalLink class="size-3" />
+                {{ $t('dashboard.settings.sso.oktaGuide') }} <ExternalLink class="size-3" />
               </a>
               <a
                 href="https://learn.microsoft.com/en-us/entra/identity-platform/v2-protocols-oidc"
@@ -449,7 +451,7 @@ async function copyCallbackUrl(providerId: string) {
                 rel="noopener noreferrer"
                 class="inline-flex items-center gap-1 text-xs text-brand-600 dark:text-brand-400 hover:underline"
               >
-                Azure AD guide <ExternalLink class="size-3" />
+                {{ $t('dashboard.settings.sso.azureAdGuide') }} <ExternalLink class="size-3" />
               </a>
               <a
                 href="https://support.google.com/a/answer/60224"
@@ -457,7 +459,7 @@ async function copyCallbackUrl(providerId: string) {
                 rel="noopener noreferrer"
                 class="inline-flex items-center gap-1 text-xs text-brand-600 dark:text-brand-400 hover:underline"
               >
-                Google Workspace guide <ExternalLink class="size-3" />
+                {{ $t('dashboard.settings.sso.googleWorkspaceGuide') }} <ExternalLink class="size-3" />
               </a>
             </div>
           </div>
@@ -467,20 +469,20 @@ async function copyCallbackUrl(providerId: string) {
       <!-- How it works -->
       <div class="mt-8 rounded-lg border border-surface-100 dark:border-surface-800 bg-surface-50/50 dark:bg-surface-800/20 p-5">
         <h3 class="text-sm font-semibold text-surface-700 dark:text-surface-300 mb-3">
-          How Enterprise SSO works
+          {{ $t('dashboard.settings.sso.howItWorksTitle') }}
         </h3>
         <div class="space-y-3 text-xs text-surface-500 dark:text-surface-400">
           <div class="flex gap-3">
             <div class="flex items-center justify-center size-6 rounded-full bg-brand-50 dark:bg-brand-950/40 text-brand-600 dark:text-brand-400 text-xs font-bold shrink-0">1</div>
-            <p>You register your company's identity provider (IdP) — Okta, Azure AD, Google Workspace, or any OIDC-compliant provider.</p>
+            <p>{{ $t('dashboard.settings.sso.howItWorksStep1') }}</p>
           </div>
           <div class="flex gap-3">
             <div class="flex items-center justify-center size-6 rounded-full bg-brand-50 dark:bg-brand-950/40 text-brand-600 dark:text-brand-400 text-xs font-bold shrink-0">2</div>
-            <p>Team members visit the sign-in page and enter their work email. Matriq detects the email domain and redirects to your IdP.</p>
+            <p>{{ $t('dashboard.settings.sso.howItWorksStep2') }}</p>
           </div>
           <div class="flex gap-3">
             <div class="flex items-center justify-center size-6 rounded-full bg-brand-50 dark:bg-brand-950/40 text-brand-600 dark:text-brand-400 text-xs font-bold shrink-0">3</div>
-            <p>After authenticating with the IdP, users are automatically provisioned into your organization as members — no invitation needed.</p>
+            <p>{{ $t('dashboard.settings.sso.howItWorksStep3') }}</p>
           </div>
         </div>
       </div>

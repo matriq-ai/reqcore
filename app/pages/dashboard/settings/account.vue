@@ -6,9 +6,11 @@ import {
 
 definePageMeta({})
 
+const { t } = useI18n()
+
 useSeoMeta({
   title: 'Account Settings — Matriq',
-  description: 'Manage your personal account settings',
+  description: t('dashboard.settings.account.seoDescription'),
 })
 
 const { data: session } = await authClient.useSession(useFetch)
@@ -36,12 +38,12 @@ async function handleSaveProfile() {
     const result = await authClient.updateUser({
       name: profileName.value.trim(),
     })
-    if (result.error) throw new Error(String(result.error.message ?? 'Failed to update profile'))
+    if (result.error) throw new Error(String(result.error.message ?? t('dashboard.settings.account.updateProfileFailed')))
     profileSuccess.value = true
     setTimeout(() => { profileSuccess.value = false }, 3000)
   }
   catch (err: unknown) {
-    profileError.value = err instanceof Error ? err.message : 'Failed to update profile'
+    profileError.value = err instanceof Error ? err.message : t('dashboard.settings.account.updateProfileFailed')
   }
   finally {
     isSavingProfile.value = false
@@ -67,7 +69,7 @@ const passwordsMatch = computed(() =>
 const passwordStrength = computed(() => {
   const pw = newPassword.value
   if (pw.length === 0) return { label: '', bgColor: '', textColor: '', width: '0%' }
-  if (pw.length < 8) return { label: 'Too short', bgColor: 'bg-danger-500', textColor: 'text-danger-500', width: '20%' }
+  if (pw.length < 8) return { label: t('dashboard.settings.account.passwordStrength.tooShort'), bgColor: 'bg-danger-500', textColor: 'text-danger-500', width: '20%' }
 
   let score = 0
   if (pw.length >= 8) score++
@@ -76,10 +78,10 @@ const passwordStrength = computed(() => {
   if (/[0-9]/.test(pw)) score++
   if (/[^A-Za-z0-9]/.test(pw)) score++
 
-  if (score <= 2) return { label: 'Weak', bgColor: 'bg-danger-500', textColor: 'text-danger-500', width: '40%' }
-  if (score <= 3) return { label: 'Fair', bgColor: 'bg-warning-500', textColor: 'text-warning-500', width: '60%' }
-  if (score <= 4) return { label: 'Good', bgColor: 'bg-brand-500', textColor: 'text-brand-500', width: '80%' }
-  return { label: 'Strong', bgColor: 'bg-success-500', textColor: 'text-success-500', width: '100%' }
+  if (score <= 2) return { label: t('dashboard.settings.account.passwordStrength.weak'), bgColor: 'bg-danger-500', textColor: 'text-danger-500', width: '40%' }
+  if (score <= 3) return { label: t('dashboard.settings.account.passwordStrength.fair'), bgColor: 'bg-warning-500', textColor: 'text-warning-500', width: '60%' }
+  if (score <= 4) return { label: t('dashboard.settings.account.passwordStrength.good'), bgColor: 'bg-brand-500', textColor: 'text-brand-500', width: '80%' }
+  return { label: t('dashboard.settings.account.passwordStrength.strong'), bgColor: 'bg-success-500', textColor: 'text-success-500', width: '100%' }
 })
 
 async function handleChangePassword() {
@@ -93,7 +95,7 @@ async function handleChangePassword() {
       currentPassword: currentPassword.value,
       newPassword: newPassword.value,
     })
-    if (result.error) throw new Error(String(result.error.message ?? 'Failed to change password'))
+    if (result.error) throw new Error(String(result.error.message ?? t('dashboard.settings.account.changePasswordFailed')))
     passwordSuccess.value = true
     currentPassword.value = ''
     newPassword.value = ''
@@ -101,7 +103,7 @@ async function handleChangePassword() {
     setTimeout(() => { passwordSuccess.value = false }, 3000)
   }
   catch (err: unknown) {
-    passwordError.value = err instanceof Error ? err.message : 'Failed to change password'
+    passwordError.value = err instanceof Error ? err.message : t('dashboard.settings.account.changePasswordFailed')
   }
   finally {
     isChangingPassword.value = false
@@ -127,10 +129,10 @@ function getInitials(name: string | undefined): string {
     <!-- Page title -->
     <div class="mb-6">
       <h1 class="text-lg font-semibold text-surface-900 dark:text-surface-50">
-        Account
+        {{ $t('dashboard.settings.account.title') }}
       </h1>
       <p class="text-sm text-surface-500 dark:text-surface-400 mt-0.5">
-        Manage your personal profile and security settings.
+        {{ $t('dashboard.settings.account.subtitle') }}
       </p>
     </div>
 
@@ -142,8 +144,8 @@ function getInitials(name: string | undefined): string {
             <User class="size-5" />
           </div>
           <div>
-            <h2 class="text-base font-semibold text-surface-900 dark:text-surface-100">Profile</h2>
-            <p class="text-sm text-surface-500 dark:text-surface-400">Your personal information.</p>
+            <h2 class="text-base font-semibold text-surface-900 dark:text-surface-100">{{ $t('dashboard.settings.account.profileTitle') }}</h2>
+            <p class="text-sm text-surface-500 dark:text-surface-400">{{ $t('dashboard.settings.account.profileSubtitle') }}</p>
           </div>
         </div>
       </div>
@@ -176,27 +178,27 @@ function getInitials(name: string | undefined): string {
         <!-- Name field -->
         <div>
           <label for="profile-name" class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">
-            Display name
+            {{ $t('dashboard.settings.account.displayNameLabel') }}
           </label>
           <input
             id="profile-name"
             v-model="profileName"
             type="text"
             class="w-full rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 px-3 py-2 text-sm text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
-            placeholder="Your name"
+            :placeholder="t('dashboard.settings.account.displayNamePlaceholder')"
           />
         </div>
 
         <!-- Email (read-only) -->
         <div>
           <label class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">
-            Email address
+            {{ $t('dashboard.settings.account.emailAddressLabel') }}
           </label>
           <div class="w-full rounded-lg border border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50 px-3 py-2 text-sm text-surface-500 dark:text-surface-400">
             {{ session?.user?.email }}
           </div>
           <p class="mt-1.5 text-xs text-surface-400 dark:text-surface-500">
-            Email cannot be changed at this time.
+            {{ $t('dashboard.settings.account.emailCannotBeChanged') }}
           </p>
         </div>
 
@@ -209,7 +211,7 @@ function getInitials(name: string | undefined): string {
           >
             <Loader2 v-if="isSavingProfile" class="size-4 animate-spin" />
             <Save v-else class="size-4" />
-            {{ isSavingProfile ? 'Saving…' : 'Save profile' }}
+            {{ isSavingProfile ? $t('dashboard.settings.account.saving') : $t('dashboard.settings.account.saveProfile') }}
           </button>
 
           <Transition
@@ -220,7 +222,7 @@ function getInitials(name: string | undefined): string {
           >
             <span v-if="profileSuccess" class="text-sm text-success-600 dark:text-success-400 font-medium flex items-center gap-1.5">
               <Check class="size-4" />
-              Profile updated
+              {{ $t('dashboard.settings.account.profileUpdated') }}
             </span>
           </Transition>
         </div>
@@ -239,8 +241,8 @@ function getInitials(name: string | undefined): string {
             <KeyRound class="size-5" />
           </div>
           <div>
-            <h2 class="text-base font-semibold text-surface-900 dark:text-surface-100">Password</h2>
-            <p class="text-sm text-surface-500 dark:text-surface-400">Change your account password.</p>
+            <h2 class="text-base font-semibold text-surface-900 dark:text-surface-100">{{ $t('dashboard.settings.account.passwordTitle') }}</h2>
+            <p class="text-sm text-surface-500 dark:text-surface-400">{{ $t('dashboard.settings.account.passwordSubtitle') }}</p>
           </div>
         </div>
       </div>
@@ -249,7 +251,7 @@ function getInitials(name: string | undefined): string {
         <!-- Current password -->
         <div>
           <label for="current-password" class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">
-            Current password
+            {{ $t('dashboard.settings.account.currentPasswordLabel') }}
           </label>
           <div class="relative">
             <input
@@ -258,7 +260,7 @@ function getInitials(name: string | undefined): string {
               :type="showCurrentPassword ? 'text' : 'password'"
               autocomplete="current-password"
               class="w-full rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 px-3 py-2 pr-10 text-sm text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
-              placeholder="Enter current password"
+              :placeholder="t('dashboard.settings.account.currentPasswordPlaceholder')"
             />
             <button
               type="button"
@@ -274,7 +276,7 @@ function getInitials(name: string | undefined): string {
         <!-- New password -->
         <div>
           <label for="new-password" class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">
-            New password
+            {{ $t('dashboard.settings.account.newPasswordLabel') }}
           </label>
           <div class="relative">
             <input
@@ -283,7 +285,7 @@ function getInitials(name: string | undefined): string {
               :type="showNewPassword ? 'text' : 'password'"
               autocomplete="new-password"
               class="w-full rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 px-3 py-2 pr-10 text-sm text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
-              placeholder="Enter new password"
+              :placeholder="t('dashboard.settings.account.newPasswordPlaceholder')"
             />
             <button
               type="button"
@@ -298,7 +300,7 @@ function getInitials(name: string | undefined): string {
           <!-- Password strength meter -->
           <div v-if="newPassword" class="mt-2">
             <div class="flex items-center justify-between mb-1">
-              <span class="text-xs text-surface-500 dark:text-surface-400">Password strength</span>
+              <span class="text-xs text-surface-500 dark:text-surface-400">{{ $t('dashboard.settings.account.passwordStrengthLabel') }}</span>
               <span class="text-xs font-medium" :class="passwordStrength.textColor">
                 {{ passwordStrength.label }}
               </span>
@@ -316,7 +318,7 @@ function getInitials(name: string | undefined): string {
         <!-- Confirm password -->
         <div>
           <label for="confirm-password" class="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1.5">
-            Confirm new password
+            {{ $t('dashboard.settings.account.confirmNewPasswordLabel') }}
           </label>
           <input
             id="confirm-password"
@@ -324,20 +326,20 @@ function getInitials(name: string | undefined): string {
             type="password"
             autocomplete="new-password"
             class="w-full rounded-lg border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 px-3 py-2 text-sm text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors"
-            placeholder="Confirm new password"
+            :placeholder="t('dashboard.settings.account.confirmNewPasswordPlaceholder')"
           />
           <p
             v-if="confirmPassword && !passwordsMatch"
             class="mt-1.5 text-xs text-danger-500"
           >
-            Passwords do not match.
+            {{ $t('dashboard.settings.account.passwordsDoNotMatch') }}
           </p>
           <p
             v-if="confirmPassword && passwordsMatch"
             class="mt-1.5 text-xs text-success-500 flex items-center gap-1"
           >
             <Check class="size-3" />
-            Passwords match
+            {{ $t('dashboard.settings.account.passwordsMatch') }}
           </p>
         </div>
 
@@ -350,7 +352,7 @@ function getInitials(name: string | undefined): string {
           >
             <Loader2 v-if="isChangingPassword" class="size-4 animate-spin" />
             <Lock v-else class="size-4" />
-            {{ isChangingPassword ? 'Changing…' : 'Change password' }}
+            {{ isChangingPassword ? $t('dashboard.settings.account.changing') : $t('dashboard.settings.account.changePassword') }}
           </button>
 
           <Transition
@@ -361,7 +363,7 @@ function getInitials(name: string | undefined): string {
           >
             <span v-if="passwordSuccess" class="text-sm text-success-600 dark:text-success-400 font-medium flex items-center gap-1.5">
               <Check class="size-4" />
-              Password changed
+              {{ $t('dashboard.settings.account.passwordChanged') }}
             </span>
           </Transition>
         </div>
@@ -380,8 +382,8 @@ function getInitials(name: string | undefined): string {
             <Calendar class="size-5" />
           </div>
           <div>
-            <h2 class="text-base font-semibold text-surface-900 dark:text-surface-100">Session</h2>
-            <p class="text-sm text-surface-500 dark:text-surface-400">Your current login session details.</p>
+            <h2 class="text-base font-semibold text-surface-900 dark:text-surface-100">{{ $t('dashboard.settings.account.sessionTitle') }}</h2>
+            <p class="text-sm text-surface-500 dark:text-surface-400">{{ $t('dashboard.settings.account.sessionSubtitle') }}</p>
           </div>
         </div>
       </div>
@@ -389,19 +391,19 @@ function getInitials(name: string | undefined): string {
       <div class="px-4 sm:px-6 py-5">
         <dl class="space-y-3">
           <div class="flex items-center justify-between">
-            <dt class="text-sm text-surface-500 dark:text-surface-400">Session ID</dt>
+            <dt class="text-sm text-surface-500 dark:text-surface-400">{{ $t('dashboard.settings.account.sessionId') }}</dt>
             <dd class="text-sm font-mono text-surface-700 dark:text-surface-300">
               {{ session?.session?.id ? `${session.session.id.slice(0, 8)}…` : '—' }}
             </dd>
           </div>
           <div class="flex items-center justify-between">
-            <dt class="text-sm text-surface-500 dark:text-surface-400">Created</dt>
+            <dt class="text-sm text-surface-500 dark:text-surface-400">{{ $t('dashboard.settings.account.created') }}</dt>
             <dd class="text-sm text-surface-700 dark:text-surface-300">
               {{ session?.session?.createdAt ? new Date(session.session.createdAt).toLocaleDateString(undefined, { dateStyle: 'medium' }) : '—' }}
             </dd>
           </div>
           <div class="flex items-center justify-between">
-            <dt class="text-sm text-surface-500 dark:text-surface-400">Expires</dt>
+            <dt class="text-sm text-surface-500 dark:text-surface-400">{{ $t('dashboard.settings.account.expires') }}</dt>
             <dd class="text-sm text-surface-700 dark:text-surface-300">
               {{ session?.session?.expiresAt ? new Date(session.session.expiresAt).toLocaleDateString(undefined, { dateStyle: 'medium' }) : '—' }}
             </dd>
