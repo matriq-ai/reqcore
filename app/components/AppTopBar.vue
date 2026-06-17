@@ -215,13 +215,13 @@ onUnmounted(() => {
       <div class="flex h-14 items-center justify-between px-4 lg:px-6">
         <!-- Left: Logo + Nav -->
         <div class="flex items-center gap-1 lg:gap-2">
-          <!-- Logo — links to marketing site (reqcore.com), not app root -->
+          <!-- Logo — links to marketing site (matriq.com), not app root -->
           <a
             :href="useRuntimeConfig().public.marketingUrl"
             class="flex items-center gap-2.5 px-2 py-1.5 rounded-lg no-underline hover:bg-surface-100/60 dark:hover:bg-surface-800/60 transition-colors mr-1 lg:mr-4"
           >
-            <img src="/eagle-mascot-logo.png" alt="Reqcore mascot" class="size-7 shrink-0 object-contain" />
-            <span class="text-[15px] font-bold text-surface-900 dark:text-surface-100 hidden sm:block tracking-tight">Reqcore</span>
+            <img src="/eagle-mascot-logo.png" alt="Matriq mascot" class="size-7 shrink-0 object-contain" />
+            <span class="text-[15px] font-bold text-surface-900 dark:text-surface-100 hidden sm:block tracking-tight">Matriq</span>
           </a>
 
           <!-- Desktop nav links -->
@@ -335,7 +335,7 @@ onUnmounted(() => {
                     </div>
                   </NuxtLink>
                   <a
-                    href="https://github.com/reqcore-inc/reqcore#quick-start"
+                    href="https://github.com/matriq-inc/matriq#quick-start"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="flex items-start gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-surface-50 dark:hover:bg-surface-800/60 no-underline group/item"
@@ -629,7 +629,7 @@ onUnmounted(() => {
                 Cloud Hosted — Start Free
               </NuxtLink>
               <a
-                href="https://github.com/reqcore-inc/reqcore#quick-start"
+                href="https://github.com/matriq-inc/matriq#quick-start"
                 target="_blank"
                 rel="noopener noreferrer"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-surface-600 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors no-underline mt-1"

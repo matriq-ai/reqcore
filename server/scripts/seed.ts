@@ -1,9 +1,9 @@
 /**
- * Seeds the database with realistic demo data for Reqcore.
+ * Seeds the database with realistic demo data for Matriq.
  *
  * Creates:
- * - 1 demo user (demo@reqcore.com / demo1234)
- * - 1 organization ("Reqcore Demo")
+ * - 1 demo user (demo@matriq.com / demo1234)
+ * - 1 organization ("Matriq Demo")
  * - 5 jobs with varying statuses
  * - 30 candidates
  * - 65+ applications across all pipeline stages
@@ -74,10 +74,10 @@ if (!DATABASE_URL) {
   process.exit(1)
 }
 
-const DEMO_EMAIL = 'demo@reqcore.com'
+const DEMO_EMAIL = 'demo@matriq.com'
 const DEMO_PASSWORD = process.env.DEMO_PASSWORD ?? 'demo1234'
-const DEMO_ORG_NAME = 'Reqcore Demo'
-const DEMO_ORG_SLUG = 'reqcore-demo'
+const DEMO_ORG_NAME = 'Matriq Demo'
+const DEMO_ORG_SLUG = 'matriq-demo'
 
 // Legacy values from the old applirank.com domain — cleaned up on seed
 const LEGACY_DEMO_EMAIL = 'demo@applirank.com'
@@ -140,14 +140,14 @@ function generateSlug(title: string, uuid: string): string {
 const JOBS_DATA = [
   {
     title: 'Senior Full-Stack Engineer',
-    description: `We're hiring a Senior Full-Stack Engineer to help scale the core Reqcore platform used by growing hiring teams. You will own high-impact features across product, API, and data layers using TypeScript, Nuxt, and PostgreSQL in a pragmatic, fast-moving environment.\n\n**What you'll do**\n- Deliver end-to-end features from discovery and technical design to production rollout\n- Shape architecture decisions for multi-tenant workflows, performance, and reliability\n- Partner with product and design to turn recruiter pain points into elegant UX\n- Raise engineering quality through thoughtful code review, testing, and observability\n- Mentor team members and improve development standards across the stack\n\n**What we're looking for**\n- 5+ years building and shipping production web applications\n- Strong TypeScript proficiency across frontend and backend services\n- Experience with modern component architectures (Vue, React, or similar)\n- Practical PostgreSQL skills including query tuning and schema evolution\n- Familiarity with CI/CD, Dockerized environments, and cloud deployment workflows\n- Clear communication and ownership mindset in cross-functional teams\n\n**Nice to have**\n- Experience building internal tools, ATS/HR products, or workflow-heavy B2B software\n- Interest in transparent, explainable AI experiences`,
+    description: `We're hiring a Senior Full-Stack Engineer to help scale the core Matriq platform used by growing hiring teams. You will own high-impact features across product, API, and data layers using TypeScript, Nuxt, and PostgreSQL in a pragmatic, fast-moving environment.\n\n**What you'll do**\n- Deliver end-to-end features from discovery and technical design to production rollout\n- Shape architecture decisions for multi-tenant workflows, performance, and reliability\n- Partner with product and design to turn recruiter pain points into elegant UX\n- Raise engineering quality through thoughtful code review, testing, and observability\n- Mentor team members and improve development standards across the stack\n\n**What we're looking for**\n- 5+ years building and shipping production web applications\n- Strong TypeScript proficiency across frontend and backend services\n- Experience with modern component architectures (Vue, React, or similar)\n- Practical PostgreSQL skills including query tuning and schema evolution\n- Familiarity with CI/CD, Dockerized environments, and cloud deployment workflows\n- Clear communication and ownership mindset in cross-functional teams\n\n**Nice to have**\n- Experience building internal tools, ATS/HR products, or workflow-heavy B2B software\n- Interest in transparent, explainable AI experiences`,
     location: 'Berlin, Germany (Hybrid)',
     type: 'full_time' as const,
     status: 'open' as const,
   },
   {
     title: 'Product Designer',
-    description: `Join Reqcore as a Product Designer and craft the daily workflows used by recruiters to evaluate talent fairly and efficiently. You'll collaborate closely with engineering and product to design intuitive, high-trust experiences across dashboard, pipeline, and candidate flows.\n\n**What you'll do**\n- Lead design work from discovery through polished UI and production handoff\n- Translate complex hiring workflows into clear, low-friction user journeys\n- Run lightweight research and usability testing with real recruiting users\n- Evolve our design system and interaction patterns for speed and consistency\n- Partner with engineers to ensure high-quality implementation and accessibility\n\n**What we're looking for**\n- 3+ years in product design, ideally in B2B SaaS or workflow tools\n- Strong portfolio demonstrating end-to-end problem-solving and measurable outcomes\n- Advanced Figma skills including components, variants, and prototyping\n- Experience balancing visual polish with delivery constraints\n- Solid understanding of accessibility, hierarchy, and information architecture\n\n**Nice to have**\n- Experience designing data-rich interfaces or collaborative tooling\n- Familiarity with recruiting, HR, or marketplace products`,
+    description: `Join Matriq as a Product Designer and craft the daily workflows used by recruiters to evaluate talent fairly and efficiently. You'll collaborate closely with engineering and product to design intuitive, high-trust experiences across dashboard, pipeline, and candidate flows.\n\n**What you'll do**\n- Lead design work from discovery through polished UI and production handoff\n- Translate complex hiring workflows into clear, low-friction user journeys\n- Run lightweight research and usability testing with real recruiting users\n- Evolve our design system and interaction patterns for speed and consistency\n- Partner with engineers to ensure high-quality implementation and accessibility\n\n**What we're looking for**\n- 3+ years in product design, ideally in B2B SaaS or workflow tools\n- Strong portfolio demonstrating end-to-end problem-solving and measurable outcomes\n- Advanced Figma skills including components, variants, and prototyping\n- Experience balancing visual polish with delivery constraints\n- Solid understanding of accessibility, hierarchy, and information architecture\n\n**Nice to have**\n- Experience designing data-rich interfaces or collaborative tooling\n- Familiarity with recruiting, HR, or marketplace products`,
     location: 'Remote (EU)',
     type: 'full_time' as const,
     status: 'open' as const,
@@ -161,14 +161,14 @@ const JOBS_DATA = [
   },
   {
     title: 'Technical Writer (Part-Time)',
-    description: `We're hiring a part-time Technical Writer to make Reqcore documentation clear, actionable, and enterprise-ready. Your work will directly improve product adoption by helping recruiters, admins, and developers succeed quickly.\n\n**What you'll do**\n- Create and maintain setup guides, API docs, and troubleshooting playbooks\n- Improve onboarding flows for first-time teams and self-hosted deployments\n- Standardize tone, structure, and quality across product documentation\n- Work with engineering and product to document new releases and migrations\n- Identify knowledge gaps from support and feedback loops\n\n**What we're looking for**\n- 2+ years writing technical documentation for software products\n- Ability to explain complex systems in simple, practical language\n- Strong Markdown/docs-as-code workflow habits\n- Attention to clarity, consistency, and user intent\n- Experience editing developer-facing and operations-focused content\n\n**Nice to have**\n- Open-source documentation contributions\n- Familiarity with hiring/recruiting software terminology`,
+    description: `We're hiring a part-time Technical Writer to make Matriq documentation clear, actionable, and enterprise-ready. Your work will directly improve product adoption by helping recruiters, admins, and developers succeed quickly.\n\n**What you'll do**\n- Create and maintain setup guides, API docs, and troubleshooting playbooks\n- Improve onboarding flows for first-time teams and self-hosted deployments\n- Standardize tone, structure, and quality across product documentation\n- Work with engineering and product to document new releases and migrations\n- Identify knowledge gaps from support and feedback loops\n\n**What we're looking for**\n- 2+ years writing technical documentation for software products\n- Ability to explain complex systems in simple, practical language\n- Strong Markdown/docs-as-code workflow habits\n- Attention to clarity, consistency, and user intent\n- Experience editing developer-facing and operations-focused content\n\n**Nice to have**\n- Open-source documentation contributions\n- Familiarity with hiring/recruiting software terminology`,
     location: 'Remote (EU)',
     type: 'part_time' as const,
     status: 'open' as const,
   },
   {
     title: 'Frontend Engineering Intern',
-    description: `Start your frontend career on a real product with real users. In this 6-month internship, you'll contribute production code to Reqcore while learning modern frontend engineering practices from an experienced team.\n\n**What you'll work on**\n- Build and ship Vue/Nuxt interface components used in daily recruiting workflows\n- Improve usability, accessibility, and performance of existing screens\n- Collaborate in code reviews and iterative delivery cycles\n- Learn how product, design, and engineering collaborate in a modern SaaS team\n\n**What we're looking for**\n- Currently enrolled in computer science, software engineering, or equivalent program\n- Strong foundations in HTML, CSS, and JavaScript\n- Basic familiarity with TypeScript and component-based frameworks is a plus\n- Curiosity, coachability, and attention to detail\n- Ability to communicate clearly and ask good questions\n\n**Internship details**\n- Structured mentorship, weekly feedback, and clear growth goals\n- Opportunity to present shipped work at the end of the internship`,
+    description: `Start your frontend career on a real product with real users. In this 6-month internship, you'll contribute production code to Matriq while learning modern frontend engineering practices from an experienced team.\n\n**What you'll work on**\n- Build and ship Vue/Nuxt interface components used in daily recruiting workflows\n- Improve usability, accessibility, and performance of existing screens\n- Collaborate in code reviews and iterative delivery cycles\n- Learn how product, design, and engineering collaborate in a modern SaaS team\n\n**What we're looking for**\n- Currently enrolled in computer science, software engineering, or equivalent program\n- Strong foundations in HTML, CSS, and JavaScript\n- Basic familiarity with TypeScript and component-based frameworks is a plus\n- Curiosity, coachability, and attention to detail\n- Ability to communicate clearly and ask good questions\n\n**Internship details**\n- Structured mentorship, weekly feedback, and clear growth goals\n- Opportunity to present shipped work at the end of the internship`,
     location: 'Berlin, Germany (On-site)',
     type: 'internship' as const,
     status: 'draft' as const,
@@ -543,7 +543,7 @@ const AI_SCORING_DATA: ApplicationScoringSeed[] = [
       },
       {
         criterionKey: 'relevant_experience', maxScore: 10, applicantScore: 9, confidence: 90,
-        evidence: '7 years of production web application development. Last 4 years at B2B SaaS companies building workflow-heavy internal tools. Previous role involved building a recruitment-adjacent HR platform, directly relevant to Reqcore\'s domain.',
+        evidence: '7 years of production web application development. Last 4 years at B2B SaaS companies building workflow-heavy internal tools. Previous role involved building a recruitment-adjacent HR platform, directly relevant to Matriq\'s domain.',
         strengths: ['7 years of progressive web development experience', 'B2B SaaS background with workflow-heavy product experience', 'Direct HR/recruitment domain experience from previous role'],
         gaps: ['No open-source project maintainership mentioned'],
       },
@@ -771,7 +771,7 @@ const AI_SCORING_DATA: ApplicationScoringSeed[] = [
       },
       {
         criterionKey: 'relevant_experience', maxScore: 10, applicantScore: 8, confidence: 82,
-        evidence: '4 years of web development. Current role at a multi-tenant SaaS company building B2B collaboration tools. Strong domain relevance for Reqcore.',
+        evidence: '4 years of web development. Current role at a multi-tenant SaaS company building B2B collaboration tools. Strong domain relevance for Matriq.',
         strengths: ['Current multi-tenant SaaS experience directly relevant', 'B2B collaboration tool background matches ATS workflow needs'],
         gaps: ['4 years total experience is moderate for senior level'],
       },
@@ -1342,7 +1342,7 @@ const INTERVIEWS_DATA: InterviewSeed[] = [
     title: 'Final Panel — Culture & Leadership',
     type: 'panel', status: 'completed',
     daysOffset: -7, hour: 11, duration: 60,
-    location: 'Reqcore HQ, Friedrichstraße 123, Berlin',
+    location: 'Matriq HQ, Friedrichstraße 123, Berlin',
     notes: 'Unanimous strong hire from the panel. Great leadership examples and clear alignment with team values. Offer approved.',
     interviewers: ['Thomas Berger', 'Sarah Chen', 'Lisa Hoffmann'],
     candidateResponse: 'accepted',
@@ -2129,7 +2129,7 @@ const APPLICATION_SOURCES_DATA: ApplicationSourceSeed[] = [
   { jobIndex: 0, candidateIndex: 7, channel: 'referral', trackingLinkIndex: 3, utmSource: 'referral', utmMedium: 'internal', utmCampaign: 'eng-referral-bonus' },
   // Organic / UTM-only (no tracking link)
   { jobIndex: 0, candidateIndex: 9, channel: 'google_jobs', trackingLinkIndex: 15, utmSource: 'google_jobs', utmMedium: 'aggregator', utmCampaign: 'google-jobs-auto', referrerDomain: 'google.com' },
-  { jobIndex: 0, candidateIndex: 10, channel: 'career_site', trackingLinkIndex: null, referrerDomain: 'reqcore.com' },
+  { jobIndex: 0, candidateIndex: 10, channel: 'career_site', trackingLinkIndex: null, referrerDomain: 'matriq.com' },
   { jobIndex: 0, candidateIndex: 11, channel: 'direct', trackingLinkIndex: null },
   { jobIndex: 0, candidateIndex: 12, channel: 'linkedin', trackingLinkIndex: 0, utmSource: 'linkedin', utmMedium: 'social', utmCampaign: 'senior-engineer-spring-2026', referrerDomain: 'linkedin.com' },
   { jobIndex: 0, candidateIndex: 13, channel: 'indeed', trackingLinkIndex: 1, utmSource: 'indeed', utmMedium: 'job_board', referrerDomain: 'indeed.com' },
@@ -2146,7 +2146,7 @@ const APPLICATION_SOURCES_DATA: ApplicationSourceSeed[] = [
   { jobIndex: 1, candidateIndex: 19, channel: 'twitter', trackingLinkIndex: 6, utmSource: 'twitter', utmMedium: 'social', utmCampaign: 'design-hiring-thread', referrerDomain: 'x.com' },
   { jobIndex: 1, candidateIndex: 20, channel: 'twitter', trackingLinkIndex: 6, utmSource: 'twitter', utmMedium: 'social', utmCampaign: 'design-hiring-thread', referrerDomain: 'x.com' },
   // Organic / no tracking link
-  { jobIndex: 1, candidateIndex: 21, channel: 'career_site', trackingLinkIndex: null, referrerDomain: 'reqcore.com' },
+  { jobIndex: 1, candidateIndex: 21, channel: 'career_site', trackingLinkIndex: null, referrerDomain: 'matriq.com' },
   { jobIndex: 1, candidateIndex: 22, channel: 'google_jobs', trackingLinkIndex: 15, utmSource: 'google_jobs', utmMedium: 'aggregator', utmCampaign: 'google-jobs-auto', referrerDomain: 'google.com' },
   { jobIndex: 1, candidateIndex: 23, channel: 'direct', trackingLinkIndex: null },
   { jobIndex: 1, candidateIndex: 24, channel: 'linkedin', trackingLinkIndex: 4, utmSource: 'linkedin', utmMedium: 'social', utmCampaign: 'product-designer-eu-2026', referrerDomain: 'linkedin.com' },
@@ -2163,7 +2163,7 @@ const APPLICATION_SOURCES_DATA: ApplicationSourceSeed[] = [
   // Via Reddit tracking link (inactive link — still attributed)
   { jobIndex: 2, candidateIndex: 10, channel: 'reddit', trackingLinkIndex: 9, utmSource: 'reddit', utmMedium: 'social', utmCampaign: 'r-devops-hiring', utmContent: 'march-post', referrerDomain: 'reddit.com' },
   // Organic / no tracking link
-  { jobIndex: 2, candidateIndex: 26, channel: 'career_site', trackingLinkIndex: null, referrerDomain: 'reqcore.com' },
+  { jobIndex: 2, candidateIndex: 26, channel: 'career_site', trackingLinkIndex: null, referrerDomain: 'matriq.com' },
   { jobIndex: 2, candidateIndex: 27, channel: 'glassdoor', trackingLinkIndex: 18, utmSource: 'glassdoor', utmMedium: 'job_board', utmCampaign: 'glassdoor-profile-2026', referrerDomain: 'glassdoor.com' },
   { jobIndex: 2, candidateIndex: 28, channel: 'direct', trackingLinkIndex: null },
   { jobIndex: 2, candidateIndex: 29, channel: 'linkedin', trackingLinkIndex: 7, utmSource: 'linkedin', utmMedium: 'social', utmCampaign: 'devops-contract-worldwide', referrerDomain: 'linkedin.com' },
@@ -2175,14 +2175,14 @@ const APPLICATION_SOURCES_DATA: ApplicationSourceSeed[] = [
   { jobIndex: 3, candidateIndex: 14, channel: 'email', trackingLinkIndex: 10, utmSource: 'newsletter', utmMedium: 'email', utmCampaign: 'writer-newsletter-mar-2026' },
   { jobIndex: 3, candidateIndex: 16, channel: 'email', trackingLinkIndex: 10, utmSource: 'newsletter', utmMedium: 'email', utmCampaign: 'writer-newsletter-mar-2026' },
   // Via careers page tracking link
-  { jobIndex: 3, candidateIndex: 18, channel: 'career_site', trackingLinkIndex: 11, utmSource: 'career_site', utmMedium: 'organic', utmCampaign: 'careers-page', referrerDomain: 'reqcore.com' },
-  { jobIndex: 3, candidateIndex: 20, channel: 'career_site', trackingLinkIndex: 11, utmSource: 'career_site', utmMedium: 'organic', referrerDomain: 'reqcore.com' },
+  { jobIndex: 3, candidateIndex: 18, channel: 'career_site', trackingLinkIndex: 11, utmSource: 'career_site', utmMedium: 'organic', utmCampaign: 'careers-page', referrerDomain: 'matriq.com' },
+  { jobIndex: 3, candidateIndex: 20, channel: 'career_site', trackingLinkIndex: 11, utmSource: 'career_site', utmMedium: 'organic', referrerDomain: 'matriq.com' },
   // Organic / no tracking link
   { jobIndex: 3, candidateIndex: 22, channel: 'linkedin', trackingLinkIndex: 14, utmSource: 'linkedin', utmMedium: 'social', utmCampaign: 'company-page-hiring', referrerDomain: 'linkedin.com' },
   { jobIndex: 3, candidateIndex: 24, channel: 'google_jobs', trackingLinkIndex: 15, utmSource: 'google_jobs', utmMedium: 'aggregator', utmCampaign: 'google-jobs-auto', referrerDomain: 'google.com' },
   { jobIndex: 3, candidateIndex: 26, channel: 'direct', trackingLinkIndex: null },
   { jobIndex: 3, candidateIndex: 28, channel: 'referral', trackingLinkIndex: null, utmSource: 'referral', utmMedium: 'internal' },
-  { jobIndex: 3, candidateIndex: 29, channel: 'career_site', trackingLinkIndex: 11, utmSource: 'career_site', utmMedium: 'organic', referrerDomain: 'reqcore.com' },
+  { jobIndex: 3, candidateIndex: 29, channel: 'career_site', trackingLinkIndex: 11, utmSource: 'career_site', utmMedium: 'organic', referrerDomain: 'matriq.com' },
 
   // ── Job 4: Frontend Engineering Intern (10 applications) ──
   // Via Handshake tracking link
@@ -2194,7 +2194,7 @@ const APPLICATION_SOURCES_DATA: ApplicationSourceSeed[] = [
   { jobIndex: 4, candidateIndex: 11, channel: 'event', trackingLinkIndex: 13, utmSource: 'tu_berlin_fair', utmMedium: 'event', utmCampaign: 'career-fair-spring-2026' },
   { jobIndex: 4, candidateIndex: 15, channel: 'event', trackingLinkIndex: 13, utmSource: 'tu_berlin_fair', utmMedium: 'event', utmCampaign: 'career-fair-spring-2026' },
   // Organic / no tracking link
-  { jobIndex: 4, candidateIndex: 17, channel: 'career_site', trackingLinkIndex: null, referrerDomain: 'reqcore.com' },
+  { jobIndex: 4, candidateIndex: 17, channel: 'career_site', trackingLinkIndex: null, referrerDomain: 'matriq.com' },
   { jobIndex: 4, candidateIndex: 19, channel: 'linkedin', trackingLinkIndex: 14, utmSource: 'linkedin', utmMedium: 'social', utmCampaign: 'company-page-hiring', referrerDomain: 'linkedin.com' },
   { jobIndex: 4, candidateIndex: 21, channel: 'direct', trackingLinkIndex: null },
   { jobIndex: 4, candidateIndex: 23, channel: 'handshake', trackingLinkIndex: 12, utmSource: 'handshake', utmMedium: 'job_board', referrerDomain: 'handshake.com' },
@@ -2205,7 +2205,7 @@ const APPLICATION_SOURCES_DATA: ApplicationSourceSeed[] = [
 // ─────────────────────────────────────────────
 
 async function seed() {
-  console.log('🌱 Seeding Reqcore demo data...\n')
+  console.log('🌱 Seeding Matriq demo data...\n')
 
   // ─────────────────────────────────────────────
   // Clean up legacy applirank.com seed data

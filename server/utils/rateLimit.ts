@@ -46,7 +46,7 @@ interface RateLimitEntry {
  * builds its own Map, so two limiters never share buckets even when their
  * window/max are identical.
  *
- * Reqcore is designed as a single-instance self-hosted app (Docker Compose
+ * Matriq is designed as a single-instance self-hosted app (Docker Compose
  * on one VPS). If you need to run multiple replicas behind a load balancer,
  * terminate rate limiting at the edge instead — Cloudflare WAF, Caddy
  * `rate_limit`, or nginx `limit_req`. See SELF-HOSTING.md → "Scaling

@@ -13,7 +13,7 @@ const isDemo = computed(() => {
   return slug && activeOrg.value?.slug === slug
 })
 
-const isDemoAccount = computed(() => session.value?.user?.email === 'demo@reqcore.com')
+const isDemoAccount = computed(() => session.value?.user?.email === 'demo@matriq.com')
 </script>
 
 <template>
@@ -35,7 +35,7 @@ const isDemoAccount = computed(() => session.value?.user?.email === 'demo@reqcor
       <span>
         <strong>Live demo</strong> — Explore freely with sample data. Editing is disabled here.
         <a
-          href="https://github.com/reqcore-inc/reqcore#quick-start"
+          href="https://github.com/matriq-inc/matriq#quick-start"
           target="_blank"
           rel="noopener noreferrer"
           class="ml-1 font-semibold underline decoration-brand-400/40 underline-offset-2 hover:decoration-brand-400"

@@ -1,0 +1,50 @@
+{
+  "common": {
+    "language": "语言",
+    "selectLanguage": "选择语言",
+    "save": "保存",
+    "cancel": "取消"
+  },
+  "home": {
+    "nav": {
+      "features": "功能",
+      "openPositions": "招聘职位",
+      "roadmap": "路线图",
+      "blog": "博客",
+      "github": "GitHub",
+      "dashboard": "工作台",
+      "logIn": "登录",
+      "signUp": "注册"
+    },
+    "badge": "面向开发团队的招聘管理系统",
+    "hero": {
+      "titleLine1": "你的招聘流程。",
+      "titleHighlight": "你的私有部署。",
+      "subtitle": "为自托管团队打造的求职者跟踪系统。",
+      "goToDashboard": "进入工作台",
+      "signIn": "登录",
+      "createAccount": "创建账户",
+      "ctaDemo": "体验演示",
+      "ctaStart": "了解更多",
+      "hint": "数据完全部署在你自己的基础设施上"
+    },
+    "pillars": {
+      "yourData": {
+        "label": "数据自主可控",
+        "desc": "Postgres + MinIO 部署在你自己的基础设施上，数据不出内网。"
+      },
+      "auditable": {
+        "label": "流程透明可审计",
+        "desc": "匹配逻辑全程可见、可自定义。"
+      },
+      "unlimitedSeats": {
+        "label": "席位不受限",
+        "desc": "招募团队成员不限人数，永不按席位收费。"
+      }
+    },
+    "footer": {
+      "source": "源代码",
+      "tagline": "Matriq — 私有化招聘管理系统"
+    }
+  }
+}

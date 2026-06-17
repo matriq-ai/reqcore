@@ -7,7 +7,7 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Applications — Reqcore',
+  title: 'Applications — Matriq',
   description: 'Manage applications across all jobs',
 })
 

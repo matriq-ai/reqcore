@@ -14,17 +14,17 @@ export default defineNitroPlugin(async () => {
   // Managed S3 providers (Railway Buckets, AWS S3) pre-provision buckets
   // and enforce privacy at the platform level — skip bucket initialization
   if (!env.S3_FORCE_PATH_STYLE) {
-    console.log(`[Reqcore] S3 bucket "${env.S3_BUCKET}" — managed provider detected, skipping initialization`)
+    console.log(`[Matriq] S3 bucket "${env.S3_BUCKET}" — managed provider detected, skipping initialization`)
     logInfo('s3.managed_provider_detected', { bucket: env.S3_BUCKET })
     return
   }
 
   try {
     await ensureBucketExists()
-    console.log(`[Reqcore] S3 bucket "${env.S3_BUCKET}" is ready`)
+    console.log(`[Matriq] S3 bucket "${env.S3_BUCKET}" is ready`)
     logInfo('s3.bucket_ready', { bucket: env.S3_BUCKET })
   } catch (error) {
-    console.error(`[Reqcore] Failed to initialize S3 bucket "${env.S3_BUCKET}":`, error)
+    console.error(`[Matriq] Failed to initialize S3 bucket "${env.S3_BUCKET}":`, error)
     logError('s3.bucket_init_failed', {
       bucket: env.S3_BUCKET,
       error_message: error instanceof Error ? error.message : String(error),

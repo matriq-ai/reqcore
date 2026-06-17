@@ -44,7 +44,7 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Create Job — Reqcore',
+  title: 'Create Job — Matriq',
   description: 'Create a new job posting',
 })
 

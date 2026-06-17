@@ -5,8 +5,8 @@ definePageMeta({
 });
 
 useSeoMeta({
-    title: "Reset Password — Reqcore",
-    description: "Set a new password for your Reqcore account",
+    title: "Reset Password — Matriq",
+    description: "Set a new password for your Matriq account",
     robots: "noindex, nofollow",
 });
 

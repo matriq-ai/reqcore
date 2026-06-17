@@ -5,8 +5,8 @@ definePageMeta({
 });
 
 useSeoMeta({
-    title: "Sign Up — Reqcore",
-    description: "Create your Reqcore account",
+    title: "Sign Up — Matriq",
+    description: "Create your Matriq account",
     robots: "noindex, nofollow",
 });
 

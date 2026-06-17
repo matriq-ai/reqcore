@@ -182,7 +182,7 @@ function resolveBetterAuthUrl(): string {
     const domain = railwayDomain.replace(/^https?:\/\//, "");
     const url = `https://${domain}`;
     console.info(
-      `[Reqcore] Using Railway public-domain BETTER_AUTH_URL: ${url}`,
+      `[Matriq] Using Railway public-domain BETTER_AUTH_URL: ${url}`,
     );
     return url;
   }

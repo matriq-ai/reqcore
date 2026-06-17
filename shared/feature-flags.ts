@@ -1,10 +1,10 @@
 /**
- * Feature flag registry — single source of truth for all flags in Reqcore.
+ * Feature flag registry — single source of truth for all flags in Matriq.
  *
  * ────────────────────────────────────────────────────────────────────────────
  * Why a registry?
  * ────────────────────────────────────────────────────────────────────────────
- * Reqcore is open source and many users self-host. They typically do NOT run
+ * Matriq is open source and many users self-host. They typically do NOT run
  * PostHog. We still want feature flags to "just work" for them (using the
  * registered default value) without any external dependency.
  *

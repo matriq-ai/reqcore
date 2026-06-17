@@ -59,7 +59,7 @@ function closeModal() {
 
             <!-- Self-host option -->
             <a
-              href="https://github.com/reqcore-inc/reqcore#quick-start"
+              href="https://github.com/matriq-inc/matriq#quick-start"
               target="_blank"
               rel="noopener noreferrer"
               class="flex items-start gap-3 rounded-xl border border-surface-200 dark:border-surface-700 px-4 py-3 transition-all hover:shadow-md hover:border-surface-300 dark:hover:border-surface-600 hover:bg-surface-50/50 dark:hover:bg-surface-800/40 no-underline group"
@@ -75,7 +75,7 @@ function closeModal() {
           </div>
 
           <a
-            href="https://github.com/reqcore-inc/reqcore"
+            href="https://github.com/matriq-inc/matriq"
             target="_blank"
             rel="noopener noreferrer"
             class="inline-flex items-center gap-1.5 text-xs text-surface-400 dark:text-surface-500 hover:text-surface-600 dark:hover:text-surface-300 transition-colors no-underline"

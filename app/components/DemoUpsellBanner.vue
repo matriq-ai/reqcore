@@ -53,7 +53,7 @@ async function handleUpgrade() {
               <ArrowRight class="ml-auto size-3 text-white/20 opacity-0 transition-all group-hover:translate-x-0.5 group-hover:opacity-100" />
             </button>
             <a
-              href="https://github.com/reqcore-inc/reqcore"
+              href="https://github.com/matriq-inc/matriq"
               target="_blank"
               rel="noopener noreferrer"
               class="group flex items-center gap-2 whitespace-nowrap rounded-xl border border-white/[0.06] bg-white/[0.04] px-3 py-2.5 transition-all hover:border-accent-400/30 hover:bg-accent-500/10 hover:shadow-md hover:shadow-accent-500/5 active:scale-[0.97]"

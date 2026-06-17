@@ -8,7 +8,7 @@
  *
  * IMPORTANT — why we do NOT use h3's `proxyRequest` here:
  *
- * app.reqcore.com is behind Cloudflare (in front of Railway). Inbound
+ * app.matriq.com is behind Cloudflare (in front of Railway). Inbound
  * requests therefore arrive carrying CF-* headers (cf-connecting-ip,
  * cf-ray, cf-ipcountry, cf-visitor) plus an X-Forwarded-For chain that
  * starts with a Cloudflare edge IP. `proxyRequest` forwards ALL inbound

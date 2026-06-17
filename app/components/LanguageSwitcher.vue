@@ -40,6 +40,7 @@ const localeFlags: Record<string, string> = {
   de: '🇩🇪',
   vi: '🇻🇳',
   nb: '🇳🇴',
+  'zh-CN': '🇨🇳',
 }
 
 type LocaleEntry = string | { code?: string | null }

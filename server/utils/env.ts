@@ -99,11 +99,11 @@ export const envSchema = z
       .optional(),
     /** Resend API key for transactional emails (invitations, etc.). When not set, emails are logged to console. */
     RESEND_API_KEY: emptyToUndefined.pipe(z.string().min(1)).optional(),
-    /** Sender email address for Resend emails. Must be a verified domain in Resend. Defaults to "Reqcore <noreply@reqcore.com>". */
+    /** Sender email address for Resend emails. Must be a verified domain in Resend. Defaults to "Matriq <noreply@matriq.com>". */
     RESEND_FROM_EMAIL: emptyToUndefined
       .pipe(z.string().min(1))
       .optional()
-      .default("Reqcore <noreply@reqcore.com>"),
+      .default("Matriq <noreply@matriq.com>"),
     /** SMTP hostname for outbound email (e.g. smtp.gmail.com). When set, SMTP is used instead of Resend. */
     SMTP_HOST: emptyToUndefined.pipe(z.string().min(1)).optional(),
     /** SMTP port. Defaults to 587 (STARTTLS). Use 465 for implicit TLS, 25 for unencrypted. */
@@ -120,11 +120,11 @@ export const envSchema = z
     SMTP_USER: emptyToUndefined.pipe(z.string().min(1)).optional(),
     /** SMTP password for authentication. Omit for anonymous relay. */
     SMTP_PASS: emptyToUndefined.pipe(z.string().min(1)).optional(),
-    /** Sender address for SMTP emails. Defaults to "Reqcore <noreply@reqcore.com>". */
+    /** Sender address for SMTP emails. Defaults to "Matriq <noreply@matriq.com>". */
     SMTP_FROM: emptyToUndefined
       .pipe(z.string().min(1))
       .optional()
-      .default('Reqcore <noreply@reqcore.com>'),
+      .default('Matriq <noreply@matriq.com>'),
     /** Use implicit TLS on port 465. When false, uses STARTTLS (port 587). Defaults to false. */
     SMTP_SECURE: z.preprocess(
       (val) => typeof val === 'string' && val.trim() === '' ? false : val === 'true',
@@ -233,7 +233,7 @@ export const env = new Proxy({} as z.infer<typeof envSchema>, {
           .map((i) => `  - ${i.path.join(".")}: ${i.message}`)
           .join("\n");
         console.error(
-          `\n[Reqcore] ❌ Missing or invalid environment variables:\n${missing}\n\n` +
+          `\n[Matriq] ❌ Missing or invalid environment variables:\n${missing}\n\n` +
             `Ensure these variables are set in your Railway service (Settings → Variables).\n` +
             `Required: DATABASE_URL, BETTER_AUTH_SECRET, S3_ENDPOINT, S3_ACCESS_KEY, S3_SECRET_KEY, S3_BUCKET\n` +
             `Required when not on Railway: BETTER_AUTH_URL (or generate a Railway domain)\n` +

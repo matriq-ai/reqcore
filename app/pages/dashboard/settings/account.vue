@@ -7,7 +7,7 @@ import {
 definePageMeta({})
 
 useSeoMeta({
-  title: 'Account Settings — Reqcore',
+  title: 'Account Settings — Matriq',
   description: 'Manage your personal account settings',
 })
 
