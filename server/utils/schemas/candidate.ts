@@ -68,3 +68,45 @@ export const candidateQuerySchema = z.object({
 export const candidateIdParamSchema = z.object({
   id: z.string().min(1),
 })
+
+// ─────────────────────────────────────────────
+// Batch import schemas (T2)
+// ─────────────────────────────────────────────
+
+/**
+ * Shape the LLM must return per resume. All fields nullable — model returns null when a field isn't found;
+ * email/name get corrected by the user in the preview table before commit.
+ */
+export const candidateExtractionSchema = z.object({
+  firstName: z
+    .string()
+    .nullable()
+    .describe('First/given name. For Chinese names, split if possible (e.g., "张" from "张三"); otherwise leave null and use lastName/fullName.'),
+  lastName: z
+    .string()
+    .nullable()
+    .describe('Last/family name. For Chinese names that cannot be split, put the full name here. For split names, this is the family name.'),
+  fullName: z
+    .string()
+    .nullable()
+    .describe('Full name as written in the resume. Use when firstName/lastName cannot be reliably split.'),
+  email: z.string().nullable().describe('Email address found in the resume.'),
+  phone: z.string().nullable().describe('Phone number found in the resume.'),
+  currentTitle: z.string().nullable().describe('Current job title or position.'),
+  notes: z.string().nullable().describe('Any additional notes about the candidate from the resume.'),
+})
+export type CandidateExtraction = z.infer<typeof candidateExtractionSchema>
+
+/**
+ * One row the user confirmed for import. Reuses createCandidateSchema's field rules (email required + normalized),
+ * plus the staging id and optional job binding.
+ */
+export const importCandidateRowSchema = createCandidateSchema.extend({
+  tempId: z.string().min(1),
+  jobId: z.string().min(1).optional(),
+})
+
+export const importCommitSchema = z.object({
+  rows: z.array(importCandidateRowSchema).min(1).max(50),
+})
+export type ImportCandidateRow = z.infer<typeof importCandidateRowSchema>

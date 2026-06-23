@@ -123,8 +123,8 @@ export const application = pgTable('application', {
 ]))
 
 /**
- * Documents stored in MinIO (resumes, cover letters, etc.).
- * `storageKey` is the S3 object key in the bucket.
+ * Documents stored in MinIO or Feishu Drive (resumes, cover letters, etc.).
+ * `storageKey` is the S3 object key when storageProvider is 's3', or the Feishu file_token when storageProvider is 'feishu'.
  * `parsedContent` holds the structured JSON output from PDF parsing.
  */
 export const document = pgTable('document', {
@@ -133,6 +133,7 @@ export const document = pgTable('document', {
   candidateId: text('candidate_id').notNull().references(() => candidate.id, { onDelete: 'cascade' }),
   type: documentTypeEnum('type').notNull().default('resume'),
   storageKey: text('storage_key').notNull().unique(),
+  storageProvider: text('storage_provider').notNull().default('s3'),
   originalFilename: text('original_filename').notNull(),
   mimeType: text('mime_type').notNull(),
   sizeBytes: integer('size_bytes'),

@@ -1,0 +1,1 @@
+ALTER TABLE "document" ADD COLUMN "storage_provider" text DEFAULT 's3' NOT NULL;

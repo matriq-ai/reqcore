@@ -183,6 +183,8 @@ export const envSchema = z
       .pipe(z.string().min(1))
       .optional()
       .default("飞书"),
+    /** Feishu Drive folder token where imported resume PDFs are uploaded (parent_type=explorer). Required for batch PDF import. */
+    FEISHU_DRIVE_FOLDER_TOKEN: emptyToUndefined.pipe(z.string().min(1)).optional(),
   })
   .superRefine((data, ctx) => {
     // BETTER_AUTH_URL can be derived at runtime from RAILWAY_PUBLIC_DOMAIN,
