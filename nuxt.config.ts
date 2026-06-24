@@ -102,8 +102,10 @@ export default defineNuxtConfig({
   // ─────────────────────────────────────────────
   // PostHog — privacy-focused product analytics & feature flags
   // ─────────────────────────────────────────────
-  // Enable source maps so PostHog error tracking can display readable stack traces
-  sourcemap: { client: "hidden" },
+  // Enable source maps so PostHog error tracking can display readable stack traces.
+  // On low-memory build hosts, set NUXT_DISABLE_SOURCEMAP=1 to skip client
+  // sourcemap generation (it is a major peak-memory consumer during the Vite build).
+  sourcemap: { client: process.env.NUXT_DISABLE_SOURCEMAP ? false : "hidden" },
 
   // @ts-ignore - posthogConfig types only available when @posthog/nuxt module is loaded
   posthogConfig: {
