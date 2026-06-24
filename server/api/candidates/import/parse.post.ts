@@ -205,17 +205,17 @@ async function processFile(
       model: providerConfig.model,
       error_message: err instanceof Error ? err.message : String(err),
     })
-    // Also surface to the server console: PostHog logging is off without
-    // POSTHOG_PUBLIC_KEY (e.g. local dev), so logError alone is invisible here.
-    console.error(`[import.parse] AI extraction failed for "${filename}":`, err)
     return {
       tempId,
       filename,
       extracted: null,
       emailExists: false,
       parseError: 'AI extraction failed',
+      // h3 errors (createError) carry the real provider message on statusMessage.
       parseErrorDetail:
-        err instanceof Error ? (err.statusMessage as string | undefined) ?? err.message : String(err),
+        err instanceof Error
+          ? (err as { statusMessage?: string }).statusMessage ?? err.message
+          : String(err),
     }
   }
 

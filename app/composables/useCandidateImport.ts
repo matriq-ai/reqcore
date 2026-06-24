@@ -14,6 +14,7 @@ interface ParseRow {
   extracted: CandidateExtraction | null
   emailExists: boolean
   parseError?: string
+  parseErrorDetail?: string
 }
 
 interface CommitRow {

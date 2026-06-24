@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowLeft, Upload, FileText, Check, X, AlertTriangle, Briefcase, Trash2 } from 'lucide-vue-next'
+import { ArrowLeft, Upload, FileText, Check, X, AlertTriangle, Briefcase, Trash2, ChevronDown } from 'lucide-vue-next'
 
 definePageMeta({
   layout: 'dashboard',
@@ -54,9 +54,19 @@ interface EditableRow {
   selected: boolean
   emailExists: boolean
   parseError?: string
+  parseErrorDetail?: string
 }
 
 const editableRows = ref<EditableRow[]>([])
+
+// tempIds whose detailed parse error is currently expanded in the status cell
+const expandedErrors = ref<Set<string>>(new Set())
+function toggleErrorDetail(tempId: string) {
+  const next = new Set(expandedErrors.value)
+  if (next.has(tempId)) next.delete(tempId)
+  else next.add(tempId)
+  expandedErrors.value = next
+}
 
 function fileToEditableRow(row: import('~~/composables/useCandidateImport').ParseRow): EditableRow {
   return {
@@ -71,6 +81,7 @@ function fileToEditableRow(row: import('~~/composables/useCandidateImport').Pars
     selected: false,
     emailExists: row.emailExists,
     parseError: row.parseError,
+    parseErrorDetail: row.parseErrorDetail,
   }
 }
 
@@ -503,9 +514,28 @@ watch(commitResults, (results) => {
                 </select>
               </td>
               <td class="px-3 py-3">
-                <div v-if="row.parseError" class="flex items-center gap-1 text-red-600 dark:text-red-400 text-xs">
-                  <AlertTriangle class="size-3.5" />
-                  {{ row.parseError }}
+                <div v-if="row.parseError" class="text-red-600 dark:text-red-400 text-xs">
+                  <button
+                    v-if="row.parseErrorDetail"
+                    type="button"
+                    class="flex items-center gap-1 hover:underline"
+                    @click="toggleErrorDetail(row.tempId)"
+                  >
+                    <AlertTriangle class="size-3.5 shrink-0" />
+                    {{ row.parseError }}
+                    <ChevronDown
+                      class="size-3.5 shrink-0 transition-transform"
+                      :class="{ 'rotate-180': expandedErrors.has(row.tempId) }"
+                    />
+                  </button>
+                  <div v-else class="flex items-center gap-1">
+                    <AlertTriangle class="size-3.5 shrink-0" />
+                    {{ row.parseError }}
+                  </div>
+                  <pre
+                    v-if="row.parseErrorDetail && expandedErrors.has(row.tempId)"
+                    class="mt-1 max-w-xs whitespace-pre-wrap break-words rounded bg-red-50 dark:bg-red-950/40 p-2 text-[11px] leading-snug text-red-700 dark:text-red-300"
+                  >{{ row.parseErrorDetail }}</pre>
                 </div>
                 <div v-else-if="row.emailExists" class="flex items-center gap-1 text-yellow-600 dark:text-yellow-400 text-xs">
                   <AlertTriangle class="size-3.5" />
