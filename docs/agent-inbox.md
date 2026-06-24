@@ -6,7 +6,176 @@
 
 ---
 
-## 当前任务:T4 — 阶段1 解析预览端点(新建 server/api/candidates/import/parse.post.ts)
+## 无当前任务
+
+> T1–T8 全部完成。T8 端到端验收由 reviewer 亲自执行(用户指派),主链路真跑通过,详见 `docs/todolist.md` T8 段。
+> **两个待补环节(需特定环境,非执行 agent 在本机能补)**:
+> 1. **AI 抽取自动预填** — 本机直连 Anthropic 返回 403 区域封锁(连无 key 也 403,非 key/代码问题)。需在能访问 Anthropic 的环境、或为 org 配 `openai_compatible` 代理 provider 后,复跑 parse 确认 `extracted.*` 自动填充(含中文姓名拆分)。
+> 2. **浏览器 UI 走查** — 本次验证打的是 HTTP API 层;i18n 键已静态自检 `ALL KEYS OK`、commit 契约已与真实后端比对一致,但页面实渲染/2s 跳转/勾选交互未在浏览器实跑。
+
+<details>
+<summary>T8 原任务规格(留档,已由 reviewer 亲跑完成)</summary>
+
+## T8 — 端到端验收(起全栈实跑全链路)
+
+> T1–T7(含 T7-fix)代码层均已完成并复测通过。本任务在真实栈跑通完整链路,是「可交付试用」的最终关卡。
+
+### 背景与为什么
+T1–T7 各自只在 build/类型/单元层验证,**全链路从未在真实栈(登录+DB+飞书+AI+浏览器)跑过**。T7 的契约 bug 正是隔离测试漏掉、只有端到端才暴露的那类。本任务起全栈、按下方清单实跑、贴真实结果——这是「可交付试用」的最终关卡。
+
+### 前置(执行前确认/准备,缺则先补或列为待用户提供)
+- **迁移落库**:`0029` 是 `db:generate` 生成的,**生成≠应用**。跑项目实际迁移命令(`npm run db:migrate` 或等价)→ 确认目标库 `document.storage_provider` 列存在。
+- **env**:`FEISHU_DRIVE_FOLDER_TOKEN` 已配(T1 已验证可上传)。
+- **AI**:测试组织在 Settings→AI 配好 analysis provider(否则 parse 返回 422)。**若需真实 API key 而本环境没有 → 列为「待用户提供」,勿伪造。**
+- **样本**:准备 2–3 个真实简历 PDF(至少 1 个中文姓名)。
+- **起栈**:`docker compose up --build -d app`(⚠️ memory:docker build 退出码 0 不代表构建成功,必须核对日志/容器健康再继续),或 `npm run dev`。
+
+### 验收步骤(逐条贴真实结果:命令输出 / 截图 / DB 查询)
+1. 登录 → 候选人列表点「批量导入」→ 进 import 页,**文案正常(非 `dashboard.candidates.import.*` 键串,验证 T7-fix 的 i18n)**。
+2. 上传 2–3 个 PDF(含中文名)→ 预览表出现、AI 字段已预填。
+3. 改一行字段、给部分行选岗位、用「批量设岗」给所有行设一个 → **缺/重复 email 行勾选被禁用**。
+4. 「导入选中(N)」→ 结果列出**邮箱**(验证 T7-fix 的 tempId 回查)+ summary(created/skipped/errored);**全成功 2 秒后自动跳回候选人列表**(验证 T7-fix 的 `summary.errored` 跳转)。
+5. 落库校验:候选人列表新增对应候选人;选了岗位的在该岗位 pipeline 出现 application(status `new`);详情「Documents」有 resume → **点预览看到 PDF(走飞书下载代理,验证 T6)**、点下载得到原文件。
+6. 后端校验:`document.storageProvider='feishu'`、`storageKey` 为飞书 file_token;飞书云空间目标文件夹里出现上传的 PDF。
+7. 失败路径:无 AI 配置 → parse 返回 422 引导;非 PDF / >20MB → 该文件报错不阻塞其余;email 缺失行未补 → 不可勾选导入;重复邮箱 → commit 标 `skipped_duplicate`。
+8. 中文姓名:拆不开时整名进 lastName + displayName 兜底,落库正确。
+
+### 产出与判定
+- `docs/todolist.md` 新增 T8 段,逐步贴真实结果。
+- 全过 → 标 done,功能可交付试用。
+- 任一步失败 → 标 blocked + 详情,**回退给对应 T 任务(T4–T7)返工**;T8 只负责发现+报告,**不在本任务里改业务代码**。
+- 凡因环境/凭据无法跑的步骤,明确列「待用户提供」,**勿跳过、勿伪造「应该能用」**。
+
+完成并回填 `docs/todolist.md`(新增 T8 段)后停下,等待复测。
+
+</details>
+
+---
+
+<details>
+<summary>T7-fix 原任务规格(留档,已完成并复测通过·含 reviewer 亲补 columns.status)</summary>
+
+## T7-fix — 修复前端导入页的 3 处阻断 bug
+
+> T7 已实现但复测**不通过**(详见 `docs/todolist.md` T7 复测段)。`npm run build` 能过,但**普通 `tsc` 不校验 .vue 模板表达式**,故以下运行期问题未被发现。本任务**只修这 3 条,不重写页面**,沿用现有 `import.vue` / `useCandidateImport.ts` / `index.vue` 结构。
+
+### 背景
+T7 做的批量导入前端,编译通过但运行期 UI 文案全坏、结果/跳转逻辑坏、并回归了既有按钮。三处根因明确,逐条修。
+
+### 必修项
+
+**1. 【i18n 键路径错位】整页文案显示原始键串**
+- 现状:`i18n/locales/en.json` 与 `zh-CN.json` 的导入文案块被放在 **`dashboard.jobs.candidates.import.*`**;但 `import.vue` / `index.vue` 模板调用的是 **`t('dashboard.candidates.import.*')`**(`dashboard.candidates` 命名空间此前不存在)。
+- 修复:把两个 locale 文件里整个 `import` 块从 `dashboard.jobs.candidates` 下**移到 `dashboard.candidates` 下**(即新建/合并 `dashboard.candidates.import`)。移完用脚本自检:
+  `node -e "const e=require('./i18n/locales/en.json');if(!e.dashboard.candidates?.import?.title)throw 'EN missing';const z=require('./i18n/locales/zh-CN.json');if(!z.dashboard.candidates?.import?.title)throw 'ZH missing';console.log('i18n path OK')"`
+- 确认 `dashboard.jobs.candidates` 下不再残留 `import`(别两边都留)。
+
+**2. 【commit 响应契约对不上 T5 后端】结果不显示 + 成功不跳转**
+后端 `server/api/candidates/import/commit.post.ts` 实际返回:`{ results: [{ tempId, status, candidateId?, applicationId?, message? }], summary: { created, skipped, errored } }`。前端按错误字段名读,逐项对齐:
+- `summary.errors` → 改为 **`summary.errored`**(影响 import.vue 的结果摘要显示,以及 line ~189 成功后自动跳转判断 `summary.errored === 0`)。
+- 结果行渲染的 `result.email` → 后端**不返回 email**;改为用 `result.tempId` 回查 `editableRows` 拿 email 显示(别让后端加字段,后端已复测定稿)。
+- 错误行渲染的 `result.error` → 改为 **`result.message`**。
+- 同步更新 `useCandidateImport.ts` 里 `CommitResult` / `CommitSummary` 接口字段名(`error`→`message`、`errors`→`errored`),与后端一致。
+
+**3. 【既有按钮回归 + 越界】**
+- `app/pages/dashboard/candidates/index.vue` 原有硬编码「Add Candidate」按钮(header + 空状态共两处)被改成了 `t('dashboard.candidates.import.addCandidate')`。本任务**只应新增「批量导入」入口**,不动既有按钮。
+- 修复:把两处「Add Candidate」**恢复为原来的硬编码英文文案**(与改动前一致);仅保留新增的「批量导入」`NuxtLink → localePath('/dashboard/candidates/import')`,其文案用 `dashboard.candidates.import.batchImport`(修复项 1 之后该键已可用)。
+
+### 验收检查(必须真跑,贴输出)
+- [ ] i18n 自检脚本(上方)输出 `i18n path OK`;`grep -n "dashboard.candidates.import" ...` 与模板调用一致。
+- [ ] `npm run build` 成功。
+- [ ] **真校验 .vue 模板**:`tsc -p tsconfig.app.json` 不够(不查模板)。若 `npx nuxi typecheck` 本机 OOM,则**人工核对** import.vue/index.vue 每个 `t('...')` 键在 locale 里存在、每个 `result.*`/`summary.*` 字段与后端返回一致,并贴核对清单。
+- [ ] 端到端(有条件则跑):导入页文案正常(非键串)、导入成功后结果列出邮箱、全成功 2 秒后跳回候选人列表;无条件则贴 build + i18n 自检 + 字段对照表,注明端到端待联调。
+
+### 注意 / 陷阱
+- 只改 i18n 文件 + `import.vue` + `useCandidateImport.ts` + `index.vue` 既有按钮回退;**不动后端**(commit/parse/document 端点已复测定稿)。
+- 别为了「省事」让后端 per-row 加 `email`——按既定契约改前端。
+- 改完别在 `dashboard.jobs.candidates` 和 `dashboard.candidates` 两处都留 `import` 块。
+
+### 复测补漏(2026-06-24,reviewer 追加)
+Fix 1/2/3 已基本到位,但复测全量审计模板 30 个 `t('dashboard.candidates.import.*')` 键,发现**仍缺 1 个键**:
+- **`dashboard.candidates.import.columns.status`** 在 `en.json` 与 `zh-CN.json` 均不存在(`columns` 块只有 file/firstName/lastName/email/phone/job)→ `import.vue:433` 表格「状态」列头显示原始键串。
+- **修复**:两个 locale 的 `dashboard.candidates.import.columns` 各补 `status`(en:`"Status"`、zh:`"状态"`)。
+- **完成判据**:跑全量键自检(不要只测 `.title`):
+  `node -e "const fs=require('fs');const en=require('./i18n/locales/en.json'),zh=require('./i18n/locales/zh-CN.json');const ks=new Set();for(const f of ['app/pages/dashboard/candidates/import.vue','app/pages/dashboard/candidates/index.vue']){const s=fs.readFileSync(f,'utf8');const re=/t\(\s*['\\\`]([^'\\\`]+)/g;let m;while(m=re.exec(s))if(m[1].startsWith('dashboard.candidates.import'))ks.add(m[1]);}const g=(o,k)=>k.split('.').reduce((a,c)=>a&&a[c],o);const miss=[...ks].filter(k=>g(en,k)===undefined||g(zh,k)===undefined);console.log(miss.length?'MISSING:'+miss.join(','):'ALL KEYS OK')"`
+  → 必须输出 `ALL KEYS OK`。
+
+完成并回填 `docs/todolist.md`(T7-fix 段追加补漏结果,贴自检输出)后停下,等待复测。
+
+</details>
+
+---
+
+<details>
+<summary>T7 原任务规格(留档;已实现但复测不通过,见 T7-fix)</summary>
+
+## T7 — 前端:批量导入页面 + 入口按钮 + composable
+
+### 背景与为什么
+后端 parse(T4)/commit(T5)/飞书下载分支(T6)齐备后,做用户可见的批量导入 UI。两阶段交互:多选简历 → `parse` 得预览表 → 逐行编辑/选岗位 → `commit` 入库。
+
+### 复用的现有范式(务必照抄约定,勿引入新 UI 库)
+- **入口页**:`app/pages/dashboard/candidates/index.vue`(「Add Candidate」是 `NuxtLink → $localePath('/dashboard/candidates/new')`;原生 Tailwind + lucide-vue-next,无 Nuxt UI 组件库)。
+- **页面/表单范式**:`app/pages/dashboard/candidates/new.vue`(`<script setup lang="ts">`、`definePageMeta({layout:'dashboard',middleware:['auth','require-org']})`、`useSeoMeta`、`useLocalePath()`、本地 `ref` 表单 + 客户端 `zod` 校验 + `isSubmitting`/`errors` map)。
+- **岗位下拉**:`useFetch('/api/jobs', { query: { status: 'open' } })`(见 `app/components/ApplyToJobModal.vue`)。
+- **composable 范式**:`app/composables/useCandidates.ts`(`useFetch` singleton key 读 / `$fetch` 写 + `usePreviewReadOnly` 处理只读预览态)。
+- **i18n**:`useI18n()`/`$t` + `i18n/locales/en.json` + `zh-CN.json`(本页应 i18n;注:现有 candidates 页部分文案仍硬编码英文,但新页按计划 + zh-CN 私有化目标走 `$t` 新键)。
+
+### 改动
+1. **新建 `app/composables/useCandidateImport.ts`**:
+   - `parseFiles(files: File[])`:`FormData`,每个文件 `append('files', file)`(**字段名必须是 `files`**,后端按 `p.name==='files'` 过滤);`$fetch('/api/candidates/import/parse', { method:'POST', body: formData })`(**勿手设 Content-Type**,浏览器自动带 boundary)→ `{ rows }`。带 `isParsing`。`usePreviewReadOnly` 处理只读。
+   - `commitRows(rows)`:`$fetch('/api/candidates/import/commit', { method:'POST', body:{ rows } })` → `{ results, summary }`。带 `isCommitting`。
+2. **新建 `app/pages/dashboard/candidates/import.vue`**:
+   - `definePageMeta` layout/middleware 同 new.vue;`useSeoMeta`;顶部返回链接 `localePath('/dashboard/candidates')`。
+   - 多选/拖拽文件区,`accept=".pdf,.docx"`(**不放 `.doc`**,见 T4 决策);前端提示 ≤20 文件、单文件 ≤20MB(真正校验在后端)。
+   - 选文件 → `parseFiles` → 渲染**可编辑表格**:每行 = 文件名 + firstName/lastName/email/phone 输入框(用 `extracted.*` 预填,`extracted` 为 null 时空表单)+ 岗位下拉 + 状态列(`emailExists`→「已存在」警示;`parseError`→显示原因)。
+   - 顶部「全部应用为岗位 ▾」批量给所有行设 `jobId`;每行勾选框。
+   - **缺 email 或 `emailExists` 的行禁止勾选**(产品规则:缺/重复 email 不可导入——前端硬禁用,别只靠后端);firstName/lastName 必填(中文名可能只拆到 lastName,沿用 new.vue 的 zod 思路)。
+   - 「导入选中(N)」→ `commitRows`(选中行映射成 `{tempId,firstName,lastName,displayName?,email,phone?,jobId?}`,**tempId 原样回传**)→ 展示每行结果(created/skipped_duplicate/error)+ summary → 成功后链/跳回候选人列表。
+3. **入口按钮**:`candidates/index.vue` 在「Add Candidate」旁加「批量导入」`NuxtLink → localePath('/dashboard/candidates/import')`(顶部 + 空状态区两处)。
+4. **i18n**:`en.json` + `zh-CN.json` 新增 `dashboard.candidates.import.*`(标题/按钮/列头/状态/批量设岗/结果提示);其余 5 语言自动回退英文。
+
+### 验收检查(真跑,贴输出)
+- [ ] `npm run build` 成功,import 页面 + composable 编译进产物。
+- [ ] 类型:`.vue` 完整类型检查依赖 vue-tsc,本机 `nuxi typecheck` 会 OOM(node v25),故以 `npm run build` 通过为主 + 关键类型人工核对;能跑则补 `tsc --noEmit -p .nuxt/tsconfig.app.json`。
+- [ ] 端到端(需登录+DB+飞书+AI):列表点「批量导入」→ 传 2–3 个 PDF → 预览表 AI 预填 → 改字段/选岗/批量设岗 → 导入选中 → 候选人列表新增、选岗的出现 application、详情 Documents 可预览(依赖 T6)、重复邮箱被跳过。贴真实结果或注明「端到端待联调」,**勿伪造**。
+
+### 注意 / 陷阱
+- 上传 FormData 字段名必须 `files`;**勿手设 multipart Content-Type**。
+- `tempId` 来自 parse 每行,commit 必须原样回传(是 T3 暂存键)。
+- parse 与 commit 须**同一登录会话 + 同进程**(T3 为进程内 `Map` 暂存,TTL 30min);用户编辑别拖太久。
+- 缺/重复 email 行不可导入——前端硬禁用勾选。
+- 文件类型只放 PDF/DOCX(T4 决策)。
+- 不在本任务里碰后端端点/schema。
+
+完成并回填 `docs/todolist.md`(新增 T7 段)后停下,等待复测。
+
+</details>
+
+---
+
+<details>
+<summary>T6 原任务规格(留档,已完成并复测通过·S3 改全量 buffer 已决策接受)</summary>
+
+## T6 — 文档下载/预览端点的飞书分支
+
+### 背景与为什么
+批量导入阶段2(T5 commit)已把简历存到飞书云空间:`document.storageProvider='feishu'`、`storageKey=飞书 file_token`。下载/预览两端点原本只走 S3,本任务加 `storageProvider` 分支让飞书来源简历可下载/预览。
+
+### 改动(两个文件)
+`server/api/documents/[id]/download.get.ts` 和 `preview.get.ts`:`columns` 加 `storageProvider`;`storageProvider==='feishu'` → `downloadFromFeishuDrive(storageKey)`(try/catch,失败 502,不泄露细节)、`Content-Length=buf.length`、`return buf`;否则走 S3。安全头全保留;preview「仅 PDF」校验在分支前。
+
+### 验收(已复测通过)
+build + `tsc --noEmit -p .nuxt/tsconfig.server.json` 0 errors;两路由编译进产物。详见 `docs/todolist.md` T6。
+
+完成并回填 `docs/todolist.md`(新增 T6 段)后停下,等待复测。
+
+</details>
+
+<details>
+<summary>T4 原任务规格(留档,已完成并复测通过)</summary>
+
+## T4 — 阶段1 解析预览端点(新建 server/api/candidates/import/parse.post.ts)
 
 ### 背景与为什么
 「批量 PDF 导入候选人」两阶段。本任务做**阶段1 `parse`**:接收 multipart 的多个简历文件 → 逐个抽文本 + AI 识别候选人字段 → **原始字节暂存内存(T3)** → 返回每行预览。**不碰飞书上传、不入库、不碰前端**——那些是 T5(commit)/前端任务。T1(飞书)、T2(schema)、T3(暂存)均已完成并复测通过,本任务直接 import 复用它们。
@@ -83,6 +252,8 @@
 - 没真跑 build / 核心逻辑脚本就标 done。
 
 完成并回填 `docs/todolist.md`(新增 T4 段,贴真实输出)后停下,等待复测。
+
+</details>
 
 ---
 

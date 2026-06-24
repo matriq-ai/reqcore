@@ -9,7 +9,7 @@ import { createOpenAI } from '@ai-sdk/openai'
 import { createAnthropic } from '@ai-sdk/anthropic'
 import { createGoogleGenerativeAI } from '@ai-sdk/google'
 import { generateObject } from 'ai'
-import type { z } from 'zod'
+import { z } from 'zod'
 import { decrypt } from '../encryption'
 
 export type SupportedProvider = 'openai' | 'anthropic' | 'google' | 'openai_compatible'
@@ -126,13 +126,22 @@ export function createLanguageModel(config: ProviderConfig) {
   }
 
   switch (config.provider) {
-    case 'openai':
-    case 'openai_compatible': {
+    case 'openai': {
       const openai = createOpenAI({
         apiKey,
         ...(config.baseUrl ? { baseURL: config.baseUrl } : {}),
       })
       return openai(config.model)
+    }
+    case 'openai_compatible': {
+      const openai = createOpenAI({
+        apiKey,
+        ...(config.baseUrl ? { baseURL: config.baseUrl } : {}),
+      })
+      // Use the Chat Completions API (`/chat/completions`). Many OpenAI-compatible
+      // backends (DeepSeek, MiniMax, Groq, Together, …) do not implement the newer
+      // `/responses` endpoint that the default `openai(model)` helper targets.
+      return openai.chat(config.model)
     }
     case 'anthropic': {
       const anthropic = createAnthropic({
@@ -170,6 +179,15 @@ export async function generateStructuredOutput<T>(
     schemaDescription?: string
   },
 ): Promise<{ object: T; usage: { promptTokens: number; completionTokens: number } }> {
+  // OpenAI-compatible backends (DeepSeek, MiniMax, …) commonly reject the strict
+  // `response_format: { type: 'json_schema' }` that `generateObject` emits
+  // ("This response_format type is unavailable now"). Fall back to the widely
+  // supported `json_object` mode, describing the schema in the prompt and
+  // validating the returned JSON ourselves.
+  if (config.provider === 'openai_compatible') {
+    return generateStructuredOutputJsonObject(config, options)
+  }
+
   const model = createLanguageModel(config)
 
   const result = await generateObject({
@@ -188,6 +206,120 @@ export async function generateStructuredOutput<T>(
     usage: {
       promptTokens: result.usage.inputTokens ?? 0,
       completionTokens: result.usage.outputTokens ?? 0,
+    },
+  }
+}
+
+/**
+ * Structured-output path for OpenAI-compatible endpoints that only support
+ * `response_format: { type: 'json_object' }`. Calls `/chat/completions`
+ * directly, injects the JSON Schema into the system prompt, then parses and
+ * validates the response against the zod schema.
+ */
+async function generateStructuredOutputJsonObject<T>(
+  config: ProviderConfig,
+  options: {
+    system: string
+    prompt: string
+    schema: z.ZodType<T>
+    schemaName: string
+    schemaDescription?: string
+  },
+): Promise<{ object: T; usage: { promptTokens: number; completionTokens: number } }> {
+  const secret = env.BETTER_AUTH_SECRET
+  const apiKey = decrypt(config.apiKeyEncrypted, secret)
+
+  if (!apiKey) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'Failed to decrypt AI API key. The key may be corrupted.',
+    })
+  }
+
+  const baseUrl = (config.baseUrl || 'https://api.openai.com/v1').replace(/\/+$/, '')
+  const jsonSchema = z.toJSONSchema(options.schema)
+
+  const schemaHint = options.schemaDescription
+    ? `${options.schemaName}: ${options.schemaDescription}`
+    : options.schemaName
+
+  const systemPrompt = `${options.system}\n\nRespond with a single JSON object named "${schemaHint}" that conforms to this JSON Schema:\n${JSON.stringify(jsonSchema)}\n\nReturn only the raw JSON object — no markdown fences, no commentary.`
+
+  const callChatCompletions = (includeResponseFormat: boolean) =>
+    fetch(`${baseUrl}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: config.model,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: options.prompt },
+        ],
+        // `json_object` is a nudge, not a requirement: the schema is in the
+        // system prompt and we parse/validate the result ourselves.
+        ...(includeResponseFormat ? { response_format: { type: 'json_object' } } : {}),
+        max_tokens: config.maxTokens,
+        temperature: 0.1,
+      }),
+    })
+
+  let res = await callChatCompletions(true)
+
+  // Some OpenAI-compatible providers (e.g. MiniMax) reject `json_object`
+  // ("unknown response_format type 'json_object'"). Retry once without it —
+  // DeepSeek/OpenAI keep the nudge, MiniMax falls back to prompt-only.
+  if (!res.ok && res.status === 400) {
+    const errText = await res.text().catch(() => '')
+    if (/response_format/i.test(errText)) {
+      res = await callChatCompletions(false)
+    }
+    else {
+      throw createError({
+        statusCode: 502,
+        statusMessage: `AI provider error (${res.status}): ${errText.slice(0, 500)}`,
+      })
+    }
+  }
+
+  if (!res.ok) {
+    const errText = await res.text().catch(() => '')
+    throw createError({
+      statusCode: 502,
+      statusMessage: `AI provider error (${res.status}): ${errText.slice(0, 500)}`,
+    })
+  }
+
+  const data = await res.json() as {
+    choices?: Array<{ message?: { content?: string } }>
+    usage?: { prompt_tokens?: number; completion_tokens?: number }
+  }
+
+  const content = data.choices?.[0]?.message?.content
+  if (typeof content !== 'string' || content.trim() === '') {
+    throw createError({ statusCode: 502, statusMessage: 'AI provider returned no content' })
+  }
+
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(content)
+  }
+  catch {
+    // Some models wrap the JSON in prose or markdown fences — extract the object.
+    const match = content.match(/\{[\s\S]*\}/)
+    if (!match) {
+      throw createError({ statusCode: 502, statusMessage: 'AI provider returned non-JSON output' })
+    }
+    parsed = JSON.parse(match[0])
+  }
+
+  return {
+    object: options.schema.parse(parsed),
+    usage: {
+      promptTokens: data.usage?.prompt_tokens ?? 0,
+      completionTokens: data.usage?.completion_tokens ?? 0,
     },
   }
 }

@@ -173,6 +173,51 @@ Then sign in with:
 
 ---
 
+### Option C — Local Development (Faster Iteration)
+
+Skip Docker builds during development by running Nuxt locally with hot reload. Use Docker only for database and storage:
+
+```bash
+# 1. Start only PostgreSQL and MinIO (no app container)
+docker compose up db minio -d
+
+# 2. Wait for services to be healthy
+docker compose ps
+
+# 3. Create .env file
+cp .env.example .env
+
+# 4. Install dependencies
+npm install
+
+# 5. Push database schema
+npm run db:push
+
+# 6. (Optional) Seed demo data
+npm run db:seed
+
+# 7. Start Nuxt dev server with hot reload
+npm run dev
+```
+
+The app will be available at **[http://localhost:3000](http://localhost:3000)** with live reload on code changes.
+
+**Key differences from Docker:**
+- Hot reload — changes to `.vue`/`.ts` files reflect instantly
+- Debugger — attach to Nuxt process for debugging
+- Slower first start — npm dependencies are installed locally
+
+**Useful local commands:**
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start dev server |
+| `npm run db:push` | Sync schema changes |
+| `npm run db:seed` | Seed test data |
+| `npm run db:studio` | Open Drizzle Studio (GUI) |
+
+---
+
 ### Updating to a new release
 
 When a new version of Reqcore is released, follow these steps **in order** to update your instance. Your data is safe — updates never delete the database or your uploaded files.

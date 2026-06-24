@@ -1,6 +1,16 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { createRequire } from "node:module";
 import tailwindcss from "@tailwindcss/vite";
 import { readEnvFlagOverrides } from "./shared/feature-flags";
+
+// pdf-parse loads the pdfjs worker via a dynamic runtime path that
+// node-file-trace can't follow, so `pdf.worker.mjs` is otherwise dropped from
+// the production bundle — breaking PDF resume parsing in the container
+// ("Setting up fake worker failed: Cannot find module .../pdf.worker.mjs").
+// Resolve its real path (pdfjs-dist has no exports map) and force-include it.
+const pdfWorkerPath = createRequire(import.meta.url).resolve(
+  "pdfjs-dist/legacy/build/pdf.worker.mjs",
+);
 
 const railwayEnvironmentName =
   process.env.RAILWAY_ENVIRONMENT_NAME?.toLowerCase() ?? "";
@@ -268,6 +278,11 @@ export default defineNuxtConfig({
   },
 
   nitro: {
+    externals: {
+      // Force-include the pdfjs worker (see pdfWorkerPath above) so it ships
+      // inside .output/server/node_modules and PDF parsing works in production.
+      traceInclude: [pdfWorkerPath],
+    },
     routeRules: {
       "/**": {
         headers: {

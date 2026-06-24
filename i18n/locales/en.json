@@ -1153,6 +1153,49 @@
         }
       }
     },
+    "candidates": {
+      "import": {
+        "backLink": "Back to Candidates",
+        "title": "Import Candidates",
+        "description": "Batch import candidates from resume files (PDF or DOCX)",
+        "batchImport": "Import",
+        "addCandidate": "Add Candidate",
+        "dropzone": {
+          "title": "Drop resume files here or click to browse",
+          "hint": "PDF or DOCX, max 20 files, each up to 20MB"
+        },
+        "batchApplyJob": "Apply to Job",
+        "selectJob": "Select a job...",
+        "apply": "Apply",
+        "clear": "Clear All",
+        "importing": "Importing...",
+        "importSelected": "Import Selected ({count})",
+        "noJob": "No job",
+        "columns": {
+          "file": "File",
+          "firstName": "First Name",
+          "lastName": "Last Name",
+          "email": "Email",
+          "phone": "Phone",
+          "job": "Job",
+          "status": "Status"
+        },
+        "status": {
+          "emailExists": "Email already exists",
+          "ready": "Ready to import",
+          "missingEmail": "Email required"
+        },
+        "requiredHint": "* First name and last name are required",
+        "results": {
+          "title": "Import Results",
+          "created": "{count} created",
+          "skipped": "{count} skipped",
+          "errors": "{count} errors",
+          "duplicate": "Duplicate email",
+          "viewAll": "View All Candidates"
+        }
+      }
+    },
     "settings": {
       "errorBoundary": {
         "title": "Something went wrong",

@@ -15,14 +15,17 @@ import { candidateExtractionSchema, type CandidateExtraction } from '../../../ut
 import { saveImportStagingFile } from '../../../utils/importStaging'
 import { candidate } from '../../../database/schema'
 import { createRateLimiter } from '../../../utils/rateLimit'
+import { logError } from '../../../utils/logger'
 
 const IMPORT_MAX_FILE_BYTES = 20 * 1024 * 1024 // 20MB per file
 const IMPORT_MAX_FILES = 20
 const IMPORT_AI_CONCURRENCY = 3
 
+// Only PDF and DOCX are supported. Legacy .doc is intentionally excluded:
+// file-type reports it as `application/x-cfb`, so it would never match here
+// anyway — listing `application/msword` would be a dead entry that misleads.
 const PARSEABLE_MIME = new Set([
   'application/pdf',
-  'application/msword',
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 ])
 
@@ -38,6 +41,9 @@ interface ParseRow {
   extracted: CandidateExtraction | null
   emailExists: boolean
   parseError?: string
+  // Full provider/exception message behind a generic parseError, surfaced in
+  // the UI on demand so the user can self-diagnose (e.g. insufficient balance).
+  parseErrorDetail?: string
 }
 
 const EXTRACTION_SYSTEM_PROMPT = `You are a resume parser. Extract candidate information from the provided resume text.
@@ -187,14 +193,29 @@ async function processFile(
     })
 
     extracted = result.object
-  } catch {
-    // Single file failure doesn't crash the whole batch
+  } catch (err) {
+    // Single file failure doesn't crash the whole batch. Log the real cause —
+    // the user-facing parseError is generic, so the actual provider error
+    // (bad endpoint, auth, unsupported response_format, JSON parse, timeout…)
+    // is only visible here.
+    logError('candidate.import.ai_extraction_failed', {
+      org_id: orgId,
+      filename,
+      provider: providerConfig.provider,
+      model: providerConfig.model,
+      error_message: err instanceof Error ? err.message : String(err),
+    })
+    // Also surface to the server console: PostHog logging is off without
+    // POSTHOG_PUBLIC_KEY (e.g. local dev), so logError alone is invisible here.
+    console.error(`[import.parse] AI extraction failed for "${filename}":`, err)
     return {
       tempId,
       filename,
       extracted: null,
       emailExists: false,
       parseError: 'AI extraction failed',
+      parseErrorDetail:
+        err instanceof Error ? (err.statusMessage as string | undefined) ?? err.message : String(err),
     }
   }
 

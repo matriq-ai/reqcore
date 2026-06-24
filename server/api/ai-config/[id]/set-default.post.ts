@@ -1,4 +1,4 @@
-import { and, eq, sql } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import { z } from 'zod'
 import { aiConfig } from '../../../database/schema'
 import { setAiConfigDefaultSchema } from '../../../utils/schemas/scoring'
@@ -8,12 +8,17 @@ const paramsSchema = z.object({ id: z.string().min(1) })
 /**
  * POST /api/ai-config/:id/set-default
  *
- * Atomically claims one or more "default" slots (chatbot, analysis) for this
- * configuration. Uses a single UPDATE per purpose that sets the flag to true
- * for the chosen row and false for every other row in the same organization,
- * so the "exactly one default per purpose" invariant is preserved even under
- * concurrent requests. The partial unique indexes on `is_default_chatbot` and
- * `is_default_analysis` provide a DB-level backstop.
+ * Claims one or more "default" slots (chatbot, analysis) for this configuration.
+ * For each purpose we clear the flag on every row in the organization first,
+ * then set it on the chosen row — both inside one transaction.
+ *
+ * We deliberately avoid a single `set flag = (id = :id)` UPDATE: the partial
+ * unique indexes (`ai_config_default_{chatbot,analysis}_idx`, one default per
+ * purpose per org) are checked row-by-row and cannot be DEFERRABLE, so a bulk
+ * update can transiently leave two rows = true mid-statement and trip the index
+ * ("duplicate key violates ai_config_default_analysis_idx"). Clearing first
+ * guarantees at most one true row at any point. The unique indexes still act as
+ * a DB-level backstop against concurrent set-default requests.
  */
 export default defineEventHandler(async (event) => {
   const session = await requirePermission(event, { scoring: ['create'] })
@@ -27,22 +32,23 @@ export default defineEventHandler(async (event) => {
   })
   if (!existing) throw createError({ statusCode: 404, statusMessage: 'AI configuration not found.' })
 
+  const now = new Date()
   await db.transaction(async (tx) => {
     if (body.purposes.includes('chatbot')) {
       await tx.update(aiConfig)
-        .set({
-          isDefaultChatbot: sql`${aiConfig.id} = ${id}`,
-          updatedAt: new Date(),
-        })
-        .where(eq(aiConfig.organizationId, orgId))
+        .set({ isDefaultChatbot: false, updatedAt: now })
+        .where(and(eq(aiConfig.organizationId, orgId), eq(aiConfig.isDefaultChatbot, true)))
+      await tx.update(aiConfig)
+        .set({ isDefaultChatbot: true, updatedAt: now })
+        .where(and(eq(aiConfig.id, id), eq(aiConfig.organizationId, orgId)))
     }
     if (body.purposes.includes('analysis')) {
       await tx.update(aiConfig)
-        .set({
-          isDefaultAnalysis: sql`${aiConfig.id} = ${id}`,
-          updatedAt: new Date(),
-        })
-        .where(eq(aiConfig.organizationId, orgId))
+        .set({ isDefaultAnalysis: false, updatedAt: now })
+        .where(and(eq(aiConfig.organizationId, orgId), eq(aiConfig.isDefaultAnalysis, true)))
+      await tx.update(aiConfig)
+        .set({ isDefaultAnalysis: true, updatedAt: now })
+        .where(and(eq(aiConfig.id, id), eq(aiConfig.organizationId, orgId)))
     }
   })
 

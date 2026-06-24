@@ -2,6 +2,7 @@ import { eq, and } from 'drizzle-orm'
 import { z } from 'zod'
 import { GetObjectCommand } from '@aws-sdk/client-s3'
 import { document } from '../../../database/schema'
+import { downloadFromFeishuDrive } from '../../../utils/feishu'
 
 /**
  * GET /api/documents/:id/preview
@@ -33,6 +34,7 @@ export default defineEventHandler(async (event) => {
     ),
     columns: {
       storageKey: true,
+      storageProvider: true,
       originalFilename: true,
       mimeType: true,
     },
@@ -43,6 +45,7 @@ export default defineEventHandler(async (event) => {
   }
 
   // Only allow inline preview for PDFs — DOC/DOCX can contain macros
+  // This check applies to both S3 and Feishu providers
   if (doc.mimeType !== 'application/pdf') {
     throw createError({
       statusCode: 415,
@@ -50,21 +53,40 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // Fetch the object from S3
-  const s3Response = await s3Client.send(
-    new GetObjectCommand({
-      Bucket: env.S3_BUCKET,
-      Key: doc.storageKey,
-    }),
-  )
+  const encodedFilename = encodeURIComponent(doc.originalFilename)
 
-  if (!s3Response.Body) {
-    throw createError({ statusCode: 500, statusMessage: 'Failed to retrieve document' })
+  let fileBuffer: Buffer
+  let contentLength: number
+
+  if (doc.storageProvider === 'feishu') {
+    // Fetch from Feishu Drive
+    try {
+      fileBuffer = await downloadFromFeishuDrive(doc.storageKey)
+      contentLength = fileBuffer.length
+    } catch (err) {
+      throw createError({
+        statusCode: 502,
+        statusMessage: 'Failed to retrieve document',
+      })
+    }
+  } else {
+    // Fetch from S3
+    const s3Response = await s3Client.send(
+      new GetObjectCommand({
+        Bucket: env.S3_BUCKET,
+        Key: doc.storageKey,
+      }),
+    )
+
+    if (!s3Response.Body) {
+      throw createError({ statusCode: 500, statusMessage: 'Failed to retrieve document' })
+    }
+
+    contentLength = s3Response.ContentLength ?? 0
+    fileBuffer = Buffer.from(await s3Response.Body.transformToByteArray())
   }
 
   // Stream the PDF directly through the server (same-origin for iframe)
-  const encodedFilename = encodeURIComponent(doc.originalFilename)
-
   const headers: Record<string, string> = {
     'Content-Type': 'application/pdf',
     // RFC 5987: ASCII fallback + UTF-8 extended filename for international characters
@@ -78,13 +100,11 @@ export default defineEventHandler(async (event) => {
     'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'",
   }
 
-  // Forward Content-Length from S3 so browsers can render the PDF efficiently
-  if (s3Response.ContentLength) {
-    headers['Content-Length'] = String(s3Response.ContentLength)
-  }
+  // Set Content-Length so browsers can render the PDF efficiently
+  headers['Content-Length'] = String(contentLength)
 
   setResponseHeaders(event, headers)
 
-  // Stream the S3 body to the response
-  return s3Response.Body.transformToWebStream()
+  // Return the file buffer directly (h3 supports Buffer/Uint8Array)
+  return fileBuffer
 })

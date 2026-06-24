@@ -1153,6 +1153,49 @@
         }
       }
     },
+    "candidates": {
+      "import": {
+        "backLink": "返回候选人列表",
+        "title": "批量导入候选人",
+        "description": "从简历文件（PDF 或 DOCX）批量导入候选人",
+        "batchImport": "批量导入",
+        "addCandidate": "添加候选人",
+        "dropzone": {
+          "title": "拖放简历文件到此处或点击浏览",
+          "hint": "PDF 或 DOCX 格式，最多 20 个文件，每个最大 20MB"
+        },
+        "batchApplyJob": "申请职位",
+        "selectJob": "选择职位...",
+        "apply": "应用",
+        "clear": "清除全部",
+        "importing": "导入中...",
+        "importSelected": "导入已选 ({count})",
+        "noJob": "无职位",
+        "columns": {
+          "file": "文件",
+          "firstName": "名",
+          "lastName": "姓",
+          "email": "邮箱",
+          "phone": "电话",
+          "job": "职位",
+          "status": "状态"
+        },
+        "status": {
+          "emailExists": "邮箱已存在",
+          "ready": "可导入",
+          "missingEmail": "需要邮箱"
+        },
+        "requiredHint": "* 名字和姓氏为必填项",
+        "results": {
+          "title": "导入结果",
+          "created": "已创建 {count} 个",
+          "skipped": "已跳过 {count} 个",
+          "errors": "{count} 个错误",
+          "duplicate": "重复邮箱",
+          "viewAll": "查看全部候选人"
+        }
+      }
+    },
     "settings": {
       "errorBoundary": {
         "title": "出现错误",

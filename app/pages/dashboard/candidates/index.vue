@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { Users, Plus, Search, Mail, Phone, ArrowUp, ArrowDown, ArrowUpDown, SlidersHorizontal, X, StickyNote, Maximize2, Minimize2, Check } from 'lucide-vue-next'
+import { Users, Plus, Search, Mail, Phone, ArrowUp, ArrowDown, ArrowUpDown, SlidersHorizontal, X, StickyNote, Maximize2, Minimize2, Check, Upload } from 'lucide-vue-next'
+
+const { t } = useI18n()
 
 definePageMeta({
   layout: 'dashboard',
@@ -278,13 +280,22 @@ const selectedCandidateId = ref<string | null>(null)
           Manage your candidate pool and track applicants.
         </p>
       </div>
-      <NuxtLink
-        :to="$localePath('/dashboard/candidates/new')"
-        class="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 transition-colors"
-      >
-        <Plus class="size-4" />
-        Add Candidate
-      </NuxtLink>
+      <div class="flex items-center gap-2">
+        <NuxtLink
+          :to="$localePath('/dashboard/candidates/import')"
+          class="inline-flex items-center gap-2 rounded-lg border border-surface-300 dark:border-surface-700 bg-white dark:bg-surface-900 px-4 py-2 text-sm font-medium text-surface-700 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors"
+        >
+          <Upload class="size-4" />
+          {{ t('dashboard.candidates.import.batchImport') }}
+        </NuxtLink>
+        <NuxtLink
+          :to="$localePath('/dashboard/candidates/new')"
+          class="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 transition-colors"
+        >
+          <Plus class="size-4" />
+          Add Candidate
+        </NuxtLink>
+      </div>
     </div>
 
     <!-- Search + Views + Filters -->
@@ -478,14 +489,22 @@ const selectedCandidateId = ref<string | null>(null)
           : 'Add your first candidate to start building your talent pool.'
         }}
       </p>
-      <NuxtLink
-        v-if="!debouncedSearch"
-        :to="$localePath('/dashboard/candidates/new')"
-        class="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 transition-colors"
-      >
-        <Plus class="size-4" />
-        Add Candidate
-      </NuxtLink>
+      <div v-if="!debouncedSearch" class="flex items-center gap-2">
+        <NuxtLink
+          :to="$localePath('/dashboard/candidates/import')"
+          class="inline-flex items-center gap-2 rounded-lg border border-surface-300 dark:border-surface-700 bg-white dark:bg-surface-900 px-4 py-2 text-sm font-medium text-surface-700 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors"
+        >
+          <Upload class="size-4" />
+          {{ t('dashboard.candidates.import.batchImport') }}
+        </NuxtLink>
+        <NuxtLink
+          :to="$localePath('/dashboard/candidates/new')"
+          class="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 transition-colors"
+        >
+          <Plus class="size-4" />
+          Add Candidate
+        </NuxtLink>
+      </div>
     </div>
 
     <!-- Candidate table -->
