@@ -78,7 +78,7 @@
     "@isaacs/brace-expansion": "5.0.1",
     "axios": "1.16.1",
     "@posthog/nuxt": {
-      "@posthog/cli": "npm:empty-npm-package@1.0.0"
+      "@posthog/cli": "^0.0.0"
     },
     "readdir-glob": "2.0.2",
     "rollup": "4.60.1",
