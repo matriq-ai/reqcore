@@ -17,7 +17,7 @@ const railwayEnvironmentName =
 const railwayPublicDomain =
   process.env.RAILWAY_PUBLIC_DOMAIN?.toLowerCase() ?? "";
 const siteUrl = process.env.NUXT_PUBLIC_SITE_URL || "https://matriq.com";
-const i18nDefaultLocale = "en";
+const i18nDefaultLocale = "zh-CN";
 const i18nLocales = [
   { code: "en", language: "en-US", name: "English", file: "en.json" },
   {
